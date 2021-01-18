@@ -1,0 +1,12 @@
+mutation Join($username: String!, $game_code: String!){
+    join(options: {username: $username, game_code: $game_code}){
+        errors {
+            field
+            message
+        }
+        player {
+            username
+            game_code
+        }
+    }
+}
