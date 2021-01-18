@@ -3,17 +3,42 @@ import mikroConfig from "./mikro-orm.config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { MikroORM } from "@mikro-orm/core";
 import { MyContext } from "./types";
 import { PlayerResolver } from "./resolvers/player";
 import { GameResolver } from "./resolvers/game";
-import { PORT } from "./constants";
+import { COOKIE_NAME, PORT, __prod__ } from "./constants";
+import session from "express-session";
+import connectRedis from "connect-redis";
+import redis from "redis";
+import { MikroORM } from "@mikro-orm/core";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroConfig);
     await orm.getMigrator().up();
 
     const app = express();
+
+    const RedisStore = connectRedis(session);
+    const redisClient = redis.createClient();
+
+    app.use(
+        session({
+            name: COOKIE_NAME,
+            store: new RedisStore({ 
+                client: redisClient,
+                disableTouch: true,
+            }),
+            cookie: {
+                maxAge: 1000 * 60 * 60 * 2,
+                httpOnly: true,
+                sameSite: 'lax', // csrf
+                secure: __prod__
+            },
+            saveUninitialized: false,
+            secret: "probably should keep this in an env file",
+            resave: false,
+        })
+    );
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
