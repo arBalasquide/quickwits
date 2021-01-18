@@ -4,7 +4,7 @@ import { Field, ObjectType } from "type-graphql";
 
 export type MyContext = {
     em: EntityManager<any> & EntityManager<IDatabaseDriver<Connection>>;
-    req: Request & {session: { userId?: number } };
+    req: Request & {session: { userId?: string } };
     res: Response;
 }
 

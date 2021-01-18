@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey } from "@mikro-orm/core";
+import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
@@ -11,4 +11,8 @@ export class Player {
     @Field()
     @PrimaryKey()
     game_code!: string;
+
+    @Field()
+    @Property()
+    id!: string;
 }

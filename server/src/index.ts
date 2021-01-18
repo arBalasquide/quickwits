@@ -11,6 +11,7 @@ import session from "express-session";
 import connectRedis from "connect-redis";
 import redis from "redis";
 import { MikroORM } from "@mikro-orm/core";
+import cors from "cors";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroConfig);
@@ -32,7 +33,7 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60 * 2,
                 httpOnly: true,
                 sameSite: 'lax', // csrf
-                secure: __prod__
+                secure: __prod__,
             },
             saveUninitialized: false,
             secret: "probably should keep this in an env file",
@@ -47,12 +48,13 @@ const main = async () => {
         }),
         context: ({req, res}): MyContext => ({ em: orm.em, req, res}),
     });
-
+    
     apolloServer.applyMiddleware({
         app,
-        cors: {
-            origin: '*',			
-            credentials: true
+        cors: { 
+            origin: 'http://localhost:3000',
+            credentials: true,
+            allowedHeaders: ['Content-Type', 'Authorization'],
         },
     });
 
