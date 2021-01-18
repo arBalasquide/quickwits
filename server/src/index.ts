@@ -25,7 +25,10 @@ const main = async () => {
 
     apolloServer.applyMiddleware({
         app,
-        cors: false,
+        cors: {
+            origin: '*',			
+            credentials: true
+        },
     });
 
     app.listen(PORT, () => {
