@@ -2,6 +2,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Game } from "../entities/Game";
 import { FieldError, MyContext } from "../types";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { Player } from "../entities/Player";
 
 @InputType()
 class GameInput {
@@ -24,10 +25,10 @@ class GameResponse {
 export class GameResolver {
     @Query(() => Game, {nullable: true})
     async me(
-        @Ctx() { em }: MyContext,
-        @Arg("code") code: string
+        @Ctx() { em, req }: MyContext,
     ){
-        const game = await em.findOne(Game, {game_code: code})
+        const player = await em.findOne(Player, {username: req.session.userId})
+        const game = await em.findOne(Game, {game_code: player?.game_code})
         return game;
     }
 
