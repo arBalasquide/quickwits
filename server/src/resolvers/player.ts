@@ -65,7 +65,6 @@ export class PlayerResolver {
         }
 
         const game = await em.findOne(Game, {game_code: options.game_code})
-
         if(!game){
             return {
                 errors: [{
@@ -83,7 +82,6 @@ export class PlayerResolver {
                 .insert({
                     username: options.username,
                     game_code: options.game_code,
-                    id: options.username,
                 })
                 .returning("*")
             player = result[0];
@@ -94,12 +92,7 @@ export class PlayerResolver {
         } catch(err){
             const playerExists = err.code === "23505";
             if(playerExists) {
-                player = await em.findOne(Player, {
-                    username: options.username, 
-                    game_code: options.game_code
-                });
-
-                const isValidCookie = player?.username === req.session.userId;
+                const isValidCookie = req.session.userId === options.username;
                 if(!isValidCookie){
                     return {
                         errors: [{
@@ -107,11 +100,18 @@ export class PlayerResolver {
                             message: "Player already in that game. Choose a different name."
                         }],
                     };
+                } else {
+                    return {
+                        player: {
+                            username: options.username,
+                            game_code: options.game_code
+                        },
+                    }
                 }
             }
         }
 
-        const id = player.username;
+        const id = options.username;
         req.session.userId = id;
 
         return { player }

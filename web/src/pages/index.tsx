@@ -1,8 +1,9 @@
-import { Field, Form, Formik } from "formik"
+import { Form, Formik } from "formik"
 import React from "react"
 import { useRouter } from "next/router";
 import { useJoinMutation } from "../generated/graphql"
-import { Box, Button, Center, Input } from "@chakra-ui/react";
+import { Box, Button, Center } from "@chakra-ui/react";
+import { InputField } from "../components/InputField";
 
 interface joinProp { }
 
@@ -18,34 +19,20 @@ const Index: React.FC<joinProp> = ({}) => {
           username: values.username,
           game_code: values.game_code
         }});
-        if(!data) {
-        } else if (data){
-            // worked, go to next route
-            router.push("/game");
+        if(response.data.join.errors){
+        } else if(response.data?.join.player){
+          router.push("/game")
         }
       }}
       >
-        {({ values, isSubmitting, handleSubmit, handleChange}) => (
-          <Form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            name="username"
-            onChange={handleChange}
-            value={values.username}
-            placeholder="Username"
-          />
-          <Input
-            placeholder="Game code"
-            type="text"
-            name="game_code"
-            onChange={handleChange}
-            value={values.game_code}
-          />
-      
-          <Button type="submit" disabled={isSubmitting} colorScheme="green">
-            Submit
-          </Button>
-        </Form>
+        {({ isSubmitting }) => (
+          <Form>
+            <InputField name="username" label="Username" placeholder="Username"/>
+            <Box mt={4}>
+                <InputField name="game_code" label="Game Code" placeholder="Game Code"/>
+            </Box>
+            <Button mt={4} type="submit" isLoading={isSubmitting} colorScheme="blue">Join</Button>
+          </Form>
         )}
       </Formik>
     </Center>
