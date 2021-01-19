@@ -26,16 +26,28 @@ class PlayerResponse {
 export class PlayerResolver {
     @Query(() => Player, { nullable: true })
     async player(
-        @Ctx() { em, req }: MyContext 
+        @Ctx() { em, req }: MyContext,
+        @Arg("options") options: UserGameCodeInput,
     ) {
+        // Hasn't joined a game yet
         if(!req.session.userId){
             return null;
         }
 
-        // TODO: Since id is not a primary key, find user by username and game code
-        // If found already in game, validate cookie
-        const user = await em.findOne(Player, {id: req.session.userId});
-        return user;
+        const player = await em.findOne(Player, { username: options.username, game_code: options.game_code });
+
+        if(!player){
+            return null;
+        } else if(player.username !== req.session.userId){
+            return {
+                errors: [{
+                    field: "username",
+                    message: "No valid cookie found. Are you trying to play as someone else :)?",
+                }]
+            }
+        }
+
+        return player;
     }
 
     @Mutation(() => PlayerResponse)
@@ -80,13 +92,22 @@ export class PlayerResolver {
             await em.flush();
 
         } catch(err){
-            if(err.code === "23505") {
-                return {
-                    errors: [{
-                        field: "username",
-                        message: "Player already in that game. Choose a different name."
-                    }],
-                };
+            const playerExists = err.code === "23505";
+            if(playerExists) {
+                player = await em.findOne(Player, {
+                    username: options.username, 
+                    game_code: options.game_code
+                });
+
+                const isValidCookie = player?.username === req.session.userId;
+                if(!isValidCookie){
+                    return {
+                        errors: [{
+                            field: "username",
+                            message: "Player already in that game. Choose a different name."
+                        }],
+                    };
+                }
             }
         }
 
