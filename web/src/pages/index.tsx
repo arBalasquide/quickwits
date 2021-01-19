@@ -18,7 +18,7 @@ const Index: React.FC<joinProp> = ({}) => {
           username: values.username,
           game_code: values.game_code
         }});
-        if(!response) {
+        if(!data) {
         } else if (data){
             // worked, go to next route
             router.push("/game");

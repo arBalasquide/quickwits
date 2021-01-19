@@ -80,7 +80,6 @@ export class PlayerResolver {
             await em.flush();
 
         } catch(err){
-            console.log(err)
             if(err.code === "23505") {
                 return {
                     errors: [{
