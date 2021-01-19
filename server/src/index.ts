@@ -6,16 +6,20 @@ import { buildSchema } from "type-graphql";
 import { MyContext } from "./types";
 import { PlayerResolver } from "./resolvers/player";
 import { GameResolver } from "./resolvers/game";
-import { COOKIE_NAME, PORT, __prod__ } from "./constants";
+import { COOKIE_NAME, PORT, PROMPTS_PATH, __prod__ } from "./constants";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import redis from "redis";
 import { MikroORM } from "@mikro-orm/core";
 import cors from "cors";
+import { getPrompts } from "./utils/getPrompts";
+import { PromptResolver } from "./resolvers/prompt";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroConfig);
     await orm.getMigrator().up();
+
+    await getPrompts(PROMPTS_PATH, orm.em);
 
     const app = express();
 
@@ -43,7 +47,7 @@ const main = async () => {
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [GameResolver, PlayerResolver],
+            resolvers: [GameResolver, PlayerResolver, PromptResolver],
             validate: false
         }),
         context: ({req, res}): MyContext => ({ em: orm.em, req, res}),

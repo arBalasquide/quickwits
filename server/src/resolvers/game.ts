@@ -39,14 +39,13 @@ export class GameResolver {
 
         let game;
         try {
-            const players = [options.owner];
             const result = await (em as EntityManager)
                 .createQueryBuilder(Game)
                 .getKnexQuery()
                 .insert({
                     game_code: options.game_code,
-                    owner: players[0],
-                    players: players,
+                    owner: options.owner,
+                    players: [],
                 })
                 .returning("*");
             game = result[0];

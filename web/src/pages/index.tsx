@@ -1,16 +1,20 @@
 import { Form, Formik } from "formik"
 import React from "react"
 import { useRouter } from "next/router";
-import { useJoinMutation } from "../generated/graphql"
+import { useCreateMutation, useJoinMutation } from "../generated/graphql"
 import { Box, Button, Center } from "@chakra-ui/react";
 import { InputField } from "../components/InputField";
 import { toErrorMap } from "../utils/toErrorMap";
 
 interface joinProp { }
 
+// TODO: Add 2nd button for creating a game, using the same Formik component
+// I spent hours trying and couldnt get it to work :(
 const Index: React.FC<joinProp> = ({}) => {
   const router = useRouter();
-  const [joinMutation, {data, loading, error}] = useJoinMutation();
+  const [joinMutation,] = useJoinMutation();
+  //const [createMutation,] = useCreateMutation();
+
   return (
     <Center pt={10} width="100%">
       <Formik

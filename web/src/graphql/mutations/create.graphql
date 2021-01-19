@@ -1,0 +1,13 @@
+mutation Create($game_code: String!, $owner: String!) {
+  create(options: { game_code: $game_code, owner: $owner }) {
+    errors {
+      field
+      message
+    }
+    game {
+      game_code
+      owner
+      players
+    }
+  }
+}
