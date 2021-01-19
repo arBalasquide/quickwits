@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useJoinMutation } from "../generated/graphql"
 import { Box, Button, Center } from "@chakra-ui/react";
 import { InputField } from "../components/InputField";
+import { toErrorMap } from "../utils/toErrorMap";
 
 interface joinProp { }
 
@@ -14,12 +15,13 @@ const Index: React.FC<joinProp> = ({}) => {
     <Center pt={10} width="100%">
       <Formik
       initialValues={{username: "", game_code: ""}}
-      onSubmit={async values => {
+      onSubmit={async (values, { setErrors }) => {
         const response = await joinMutation({variables: {
           username: values.username,
           game_code: values.game_code
         }});
         if(response.data.join.errors){
+          setErrors(toErrorMap(response.data.join.errors));
         } else if(response.data?.join.player){
           router.push("/game")
         }
