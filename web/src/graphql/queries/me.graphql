@@ -1,0 +1,7 @@
+query Me($code:String!) {
+  me (code: $code) {
+    game_code
+    players
+    owner
+  }
+} 

@@ -18,12 +18,20 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
+  player?: Maybe<Player>;
   me?: Maybe<Game>;
 };
 
 
 export type QueryMeArgs = {
   code: Scalars['String'];
+};
+
+export type Player = {
+  __typename?: 'Player';
+  username: Scalars['String'];
+  game_code: Scalars['String'];
+  id: Scalars['String'];
 };
 
 export type Game = {
@@ -35,13 +43,8 @@ export type Game = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  create: GameResponse;
   join: PlayerResponse;
-};
-
-
-export type MutationCreateArgs = {
-  options: GameInput;
+  create: GameResponse;
 };
 
 
@@ -49,21 +52,9 @@ export type MutationJoinArgs = {
   options: UserGameCodeInput;
 };
 
-export type GameResponse = {
-  __typename?: 'GameResponse';
-  errors?: Maybe<Array<FieldError>>;
-  game?: Maybe<Game>;
-};
 
-export type FieldError = {
-  __typename?: 'FieldError';
-  field: Scalars['String'];
-  message: Scalars['String'];
-};
-
-export type GameInput = {
-  game_code: Scalars['String'];
-  owner: Scalars['String'];
+export type MutationCreateArgs = {
+  options: GameInput;
 };
 
 export type PlayerResponse = {
@@ -72,15 +63,26 @@ export type PlayerResponse = {
   player?: Maybe<Player>;
 };
 
-export type Player = {
-  __typename?: 'Player';
-  username: Scalars['String'];
-  game_code: Scalars['String'];
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
 };
 
 export type UserGameCodeInput = {
   username: Scalars['String'];
   game_code: Scalars['String'];
+};
+
+export type GameResponse = {
+  __typename?: 'GameResponse';
+  errors?: Maybe<Array<FieldError>>;
+  game?: Maybe<Game>;
+};
+
+export type GameInput = {
+  game_code: Scalars['String'];
+  owner: Scalars['String'];
 };
 
 export type JoinMutationVariables = Exact<{
@@ -101,6 +103,19 @@ export type JoinMutation = (
       & Pick<Player, 'username' | 'game_code'>
     )> }
   ) }
+);
+
+export type MeQueryVariables = Exact<{
+  code: Scalars['String'];
+}>;
+
+
+export type MeQuery = (
+  { __typename?: 'Query' }
+  & { me?: Maybe<(
+    { __typename?: 'Game' }
+    & Pick<Game, 'game_code' | 'players' | 'owner'>
+  )> }
 );
 
 
@@ -150,3 +165,44 @@ export function useJoinMutation(baseOptions?: Apollo.MutationHookOptions<JoinMut
 export type JoinMutationHookResult = ReturnType<typeof useJoinMutation>;
 export type JoinMutationResult = Apollo.MutationResult<JoinMutation>;
 export type JoinMutationOptions = Apollo.BaseMutationOptions<JoinMutation, JoinMutationVariables>;
+export const MeDocument = gql`
+    query Me($code: String!) {
+  me(code: $code) {
+    game_code
+    players
+    owner
+  }
+}
+    `;
+export type MeComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<MeQuery, MeQueryVariables>, 'query'> & ({ variables: MeQueryVariables; skip?: boolean; } | { skip: boolean; });
+
+    export const MeComponent = (props: MeComponentProps) => (
+      <ApolloReactComponents.Query<MeQuery, MeQueryVariables> query={MeDocument} {...props} />
+    );
+    
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
+ *   variables: {
+ *      code: // value for 'code'
+ *   },
+ * });
+ */
+export function useMeQuery(baseOptions: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+      }
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+        }
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
