@@ -1,7 +1,7 @@
 **/node_modules/
 **/dist/
 web/.next/
-web/src/generated/graphql.tsx
+web/src/generated
 server/src/migrations
 */yarn.lock
 */package-lock.json
