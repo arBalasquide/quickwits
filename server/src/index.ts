@@ -14,7 +14,7 @@ import { MikroORM } from "@mikro-orm/core";
 import { getPrompts } from "./utils/getPrompts";
 import { PromptResolver } from "./resolvers/prompt";
 import { Game } from "./entities/Game";
-import cors from "cors";
+import { Socket } from "socket.io";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroConfig);
@@ -23,7 +23,6 @@ const main = async () => {
     await getPrompts(PROMPTS_PATH, orm.em);
 
     const app = express();
-    const server = require('http').Server(app).listen(SOCKET_PORT);
 
     const RedisStore = connectRedis(session);
     const redisClient = redis.createClient();
@@ -56,24 +55,6 @@ const main = async () => {
         })
     );
 
-    const io = require('socket.io')(server, {
-        serverClient: false,
-        cors: {
-            origin: "*",
-            methods: ["GET", "POST"],
-        },
-    }).listen(server);
-
-    io.on('connection', (client: any) => {
-        client.on('getPlayers', (interval: any) => {
-            setInterval(async () => {
-                client.emit('players', await getPlayers("idk"));
-            }, interval);
-        });
-    });
-
-    console.log("Socket.io listening on port ", SOCKET_PORT);
-
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
             resolvers: [GameResolver, PlayerResolver, PromptResolver],
@@ -91,11 +72,27 @@ const main = async () => {
         },
     });
 
-    app.use(cors())
-
-    app.listen(PORT, () => {
+    const http = app.listen(PORT, () => {
         console.log("Server started on localhost:", PORT);
     })
+
+    const io = require('socket.io')(http, {
+        cors: {
+            origin: "http://localhost:3000",
+            methods: ["GET", "POST"]
+        },
+        wsEngine: "ws",
+    });
+
+    console.log("Socket.io listening on port ", SOCKET_PORT);
+
+    io.on('connection', (socket: Socket) => {
+        socket.on('getPlayers', (interval: number) => {
+            setInterval(async () => {
+                socket.emit('players', await getPlayers("test"));
+            }, interval);
+        });
+    });
 };
 
 main().catch((err) => {

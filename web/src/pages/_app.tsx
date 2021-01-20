@@ -1,6 +1,5 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import { ChakraProvider, ColorModeProvider } from '@chakra-ui/react'
-import openSocket from 'socket.io-client';
 
 import theme from '../theme'
 
