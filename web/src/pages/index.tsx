@@ -14,7 +14,7 @@ const Index: React.FC<joinProp> = ({}) => {
   const router = useRouter();
   const [joinMutation,] = useJoinMutation();
   //const [createMutation,] = useCreateMutation();
-
+  
   return (
     <Center pt={10} width="100%">
       <Formik

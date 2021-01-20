@@ -10,7 +10,7 @@ const Index: React.FC<joinProp> = ({}) => {
   const router = useRouter();
   return (
     <Center pt={10} width="100%">
-        <WaitingRoom code={getGameCode()} />
+        <WaitingRoom />
         {/* <Box m={2}>
         onSubmit={async values => {
         const response = await joinMutation({variables: { 

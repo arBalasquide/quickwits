@@ -1,14 +1,15 @@
-import React from "react";
-import { useMeQuery } from "../generated/graphql";
+import React, { useEffect, useState } from "react";
+import openSocket from "socket.io-client";
 
-export const WaitingRoom = ({ code }) => {
-  const { data, loading, error } = useMeQuery();
+export const WaitingRoom = ({}) => {
+  const socket = openSocket("ws://localhost:8000");
+  const [players, setPlayers] = useState([]);
 
-  return (
-    <div>
-      <span>{loading ? <p>Loading ...</p> : <div></div>}</span>
-      <span>{(data !== null && !!data) ? data.me.players.join(", ") : "empty!"}</span>
-    </div>
-  );
+  socket.on("players", async (data) => {
+    setPlayers(data);
+  });
+  socket.emit("getPlayers", 1000);
+  return <div>{players.join(",")}</div>;
 };
+
 export default WaitingRoom;
