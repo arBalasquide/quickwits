@@ -56,6 +56,8 @@ export class PlayerResolver {
         @Arg("options") options: UserGameCodeInput,
         @Ctx() { em, req }: MyContext
     ): Promise<PlayerResponse> {
+        const id = options.username+options.game_code;
+
         if(options.username.length <= 2){
             return {
                 errors: [{
@@ -92,6 +94,7 @@ export class PlayerResolver {
                 .insert({
                     username: options.username,
                     game_code: options.game_code,
+                    id: id,
                 })
                 .returning("*")
             player = result[0];
@@ -102,7 +105,7 @@ export class PlayerResolver {
         } catch(err){
             const playerExists = err.code === "23505";
             if(playerExists) {
-                const isValidCookie = req.session.userId === options.username;
+                const isValidCookie = req.session.userId === id;
                 if(!isValidCookie){
                     return {
                         errors: [{
@@ -114,14 +117,14 @@ export class PlayerResolver {
                     return {
                         player: {
                             username: options.username,
-                            game_code: options.game_code
+                            game_code: options.game_code,
+                            id: id,
                         },
                     }
                 }
             }
         }
 
-        const id = options.username;
         req.session.userId = id;
 
         return { player }
