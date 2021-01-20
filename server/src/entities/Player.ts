@@ -11,4 +11,5 @@ export class Player {
     @Field()
     @PrimaryKey()
     game_code!: string;
+
 }

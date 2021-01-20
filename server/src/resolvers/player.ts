@@ -3,6 +3,7 @@ import { Player } from "../entities/Player";
 import { FieldError, MyContext } from "../types";
 import { Resolver, Ctx, Mutation, Arg, InputType, Field, ObjectType, Query } from "type-graphql";
 import { Game } from "../entities/Game";
+import { MAX_PLAYERS } from "../constants";
 
 @InputType()
 class UserGameCodeInput {
@@ -70,8 +71,17 @@ export class PlayerResolver {
                 errors: [{
                     field: "game_code",
                     message: "Game does not exist. Try creating it instead."
-                }]
-            }
+                }],
+            };
+        }
+
+        if(game.players.length >= MAX_PLAYERS){
+            return {
+                errors: [{
+                    field: "game_code",
+                    message: "Game is full."
+                }],
+            };
         }
 
         let player;
