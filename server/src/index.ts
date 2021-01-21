@@ -87,9 +87,9 @@ const main = async () => {
     console.log("Socket.io listening on port ", SOCKET_PORT);
 
     io.on('connection', (socket: Socket) => {
-        socket.on('getPlayers', (interval: number) => {
+        socket.on('getPlayers', (interval: number, code: string) => {
             setInterval(async () => {
-                socket.emit('players', await getPlayers("test"));
+                socket.emit('players', await getPlayers(code));
             }, interval);
         });
     });
