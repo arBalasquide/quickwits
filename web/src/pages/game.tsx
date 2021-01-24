@@ -12,7 +12,7 @@ const Index: React.FC<joinProp> = ({}) => {
 
   return (
     <Center pt={10} width="100%">
-        <WaitingRoom code={"test1"} />
+        <WaitingRoom />
     </Center>
   )
 }

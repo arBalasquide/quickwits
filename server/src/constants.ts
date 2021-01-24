@@ -4,3 +4,4 @@ export const COOKIE_NAME = "qid";
 export const PROMPTS_PATH = "src/content/prompts.txt";
 export const MAX_PLAYERS = 8;
 export const SOCKET_PORT = 8000;
+export const NEW_PLAYER = "NEW_PLAYER";

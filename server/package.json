@@ -34,6 +34,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "graphql": "^15.4.0",
+    "graphql-ws": "^4.1.1",
     "package.json": "^2.0.1",
     "pg": "^8.5.1",
     "redis": "^3.0.2",
