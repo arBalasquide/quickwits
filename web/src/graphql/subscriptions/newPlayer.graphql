@@ -1,0 +1,7 @@
+subscription onNewPlayer {
+  newPlayer{
+    id
+    username
+    game_code
+  }
+}
