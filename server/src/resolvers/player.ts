@@ -39,31 +39,13 @@ export class PlayerResolver {
   @Query(() => Player, { nullable: true })
   async player(
     @Ctx() { em, req }: MyContext,
-    @Arg("options") options: UserGameCodeInput
   ) {
     // Hasn't joined a game yet
     if (!req.session.userId) {
       return null;
     }
 
-    const player = await em.findOne(Player, {
-      username: options.username,
-      game_code: options.game_code,
-    });
-
-    if (!player) {
-      return null;
-    } else if (player.username !== req.session.userId) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message:
-              "No valid cookie found. Are you trying to play as someone else :)?",
-          },
-        ],
-      };
-    }
+    const player = await em.findOne(Player, {id: req.session.userId});
 
     return player;
   }
