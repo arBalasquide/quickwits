@@ -23,7 +23,7 @@ const main = async () => {
   await getPrompts(PROMPTS_PATH, orm.em);
 
   const app = express();
-
+  
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
 
