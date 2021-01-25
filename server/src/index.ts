@@ -56,7 +56,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema,
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, pubsub }),
+    context: async ({ req, res, connection }): Promise<MyContext> => ({ em: orm.em, req, res, pubsub, connection}),
   });
 
   apolloServer.applyMiddleware({

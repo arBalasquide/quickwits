@@ -9,6 +9,7 @@ export type MyContext = {
   req: Request & { session: { userId?: string } };
   res: Response;
   pubsub: PubSub;
+  connection: any; // TODO: Fix type.
 };
 
 export type Subscription = {

@@ -157,7 +157,7 @@ export class PlayerResolver {
     await pubsub.publish(NEW_PLAYER, {
       username: options.username,
       game_code: options.game_code,
-      id: options.username + options.game_code
+      id: options.username + options.game_code,
     });
 
     return { player };
