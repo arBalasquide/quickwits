@@ -1,27 +1,20 @@
 import "reflect-metadata";
 import mikroConfig from "./mikro-orm.config";
 import express from "express";
-import { ApolloServer, PubSub } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
+import { ApolloServer, makeExecutableSchema, PubSub } from "apollo-server-express";
+import { buildTypeDefsAndResolvers } from "type-graphql";
 import { MyContext } from "./types";
 import { PlayerResolver } from "./resolvers/player";
 import { GameResolver } from "./resolvers/game";
-import {
-  COOKIE_NAME,
-  PORT,
-  PROMPTS_PATH,
-  SOCKET_PORT,
-  __prod__,
-} from "./constants";
+import { COOKIE_NAME, PORT, PROMPTS_PATH, __prod__ } from "./constants";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import redis from "redis";
 import { MikroORM } from "@mikro-orm/core";
 import { getPrompts } from "./utils/getPrompts";
 import { PromptResolver } from "./resolvers/prompt";
-import { Game } from "./entities/Game";
-import { Socket } from "socket.io";
 import { createServer } from "http";
+import { SubscriptionResolver } from "./resolvers/subscription";
 
 const main = async () => {
   const orm = await MikroORM.init(mikroConfig);
@@ -33,15 +26,6 @@ const main = async () => {
 
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
-
-  const getPlayers = async (game_code: string) => {
-    const game = await orm.em.findOne(Game, { game_code: game_code });
-    if (!game) {
-      return null;
-    } else {
-      return game.players;
-    }
-  };
 
   app.use(
     session({
@@ -64,21 +48,16 @@ const main = async () => {
 
   const pubsub = new PubSub();
 
+  const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
+    resolvers: [GameResolver, PromptResolver, PlayerResolver, SubscriptionResolver],
+  });
+  
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+
   const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [GameResolver, PlayerResolver, PromptResolver],
-      validate: false,
-    }),
+    schema,
     context: ({ req, res }): MyContext => ({ em: orm.em, req, res, pubsub }),
   });
-
-  const httpServer = createServer(app);
-  apolloServer.installSubscriptionHandlers(httpServer)
-
-  httpServer.listen({ port: PORT }, () =>{
-    console.log(`🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`)
-    console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`)
-  })
 
   apolloServer.applyMiddleware({
     app,
@@ -89,27 +68,17 @@ const main = async () => {
     },
   });
 
-  // const http = app.listen(PORT, () => {
-  //   console.log("Server started on localhost:", PORT);
-  // });
+  const httpServer = createServer(app);
+  apolloServer.installSubscriptionHandlers(httpServer);
 
-  // const io = require("socket.io")(http, {
-  //   cors: {
-  //     origin: "http://localhost:3000",
-  //     methods: ["GET", "POST"],
-  //   },
-  //   wsEngine: "ws",
-  // });
-
-  // console.log("Socket.io listening on port ", SOCKET_PORT);
-
-  // io.on("connection", (socket: Socket) => {
-  //   socket.on("getPlayers", (interval: number, code: string) => {
-  //     setInterval(async () => {
-  //       socket.emit("players", await getPlayers(code));
-  //     }, interval);
-  //   });
-  // });
+  httpServer.listen({ port: PORT }, () => {
+    console.log(
+      `🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
+    );
+    console.log(
+      `🚀 Subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`
+    );
+  });
 };
 
 main().catch((err) => {

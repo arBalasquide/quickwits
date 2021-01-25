@@ -10,7 +10,8 @@ import {
   Field,
   ObjectType,
   Query,
-  Subscription,
+  PubSub,
+  PubSubEngine,
 } from "type-graphql";
 import { Game } from "../entities/Game";
 import { MAX_PLAYERS, NEW_PLAYER, __prod__ } from "../constants";
@@ -70,7 +71,8 @@ export class PlayerResolver {
   @Mutation(() => PlayerResponse)
   async join(
     @Arg("options") options: UserGameCodeInput,
-    @Ctx() { em, req, pubsub }: MyContext
+    @PubSub() pubsub: PubSubEngine,
+    @Ctx() { em, req }: MyContext
   ): Promise<PlayerResponse> {
     const id = options.username + options.game_code;
 
@@ -138,23 +140,6 @@ export class PlayerResolver {
             ],
           };
         } else {
-          // Publish new player when they join (for newPlayer subscription)
-          console.log(
-            `Sending: ${JSON.stringify({
-              newPlayer: {
-                username: options.username,
-                game_code: options.game_code,
-                id,
-              },
-            })}`
-          );
-          pubsub.publish(NEW_PLAYER, {
-            newPlayer: {
-              username: options.username,
-              game_code: options.game_code,
-              id: id,
-            },
-          });
           return {
             player: {
               username: options.username,
@@ -169,20 +154,12 @@ export class PlayerResolver {
     req.session.userId = id;
 
     // Publish new player when they join (for newPlayer subscription)
-    console.log(`Sending: ${JSON.stringify({ newPlayer: player })}`);
-    pubsub.publish(NEW_PLAYER, {
-      newPlayer: player,
+    await pubsub.publish(NEW_PLAYER, {
+      username: options.username,
+      game_code: options.game_code,
+      id: options.username + options.game_code,
     });
 
     return { player };
-  }
-
-  @Subscription(() => Player, {
-    topics: NEW_PLAYER,
-  })
-  async newPlayer(
-    @Ctx() { pubsub }: MyContext
-  ): Promise<AsyncIterator<unknown, any, undefined>> {
-    return pubsub.asyncIterator(NEW_PLAYER);
   }
 }
