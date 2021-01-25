@@ -97,6 +97,11 @@ export type GameInput = {
   owner: Scalars['String'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  newPlayer: Player;
+};
+
 export type CreateMutationVariables = Exact<{
   game_code: Scalars['String'];
   owner: Scalars['String'];
@@ -146,6 +151,17 @@ export type MeQuery = (
     { __typename?: 'Game' }
     & Pick<Game, 'game_code' | 'players' | 'owner'>
   )> }
+);
+
+export type OnNewPlayerSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OnNewPlayerSubscription = (
+  { __typename?: 'Subscription' }
+  & { newPlayer: (
+    { __typename?: 'Player' }
+    & Pick<Player, 'id' | 'username' | 'game_code'>
+  ) }
 );
 
 
@@ -282,3 +298,39 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const OnNewPlayerDocument = gql`
+    subscription onNewPlayer {
+  newPlayer {
+    id
+    username
+    game_code
+  }
+}
+    `;
+export type OnNewPlayerComponentProps = Omit<ApolloReactComponents.SubscriptionComponentOptions<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>, 'subscription'>;
+
+    export const OnNewPlayerComponent = (props: OnNewPlayerComponentProps) => (
+      <ApolloReactComponents.Subscription<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables> subscription={OnNewPlayerDocument} {...props} />
+    );
+    
+
+/**
+ * __useOnNewPlayerSubscription__
+ *
+ * To run a query within a React component, call `useOnNewPlayerSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useOnNewPlayerSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOnNewPlayerSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOnNewPlayerSubscription(baseOptions?: Apollo.SubscriptionHookOptions<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>) {
+        return Apollo.useSubscription<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>(OnNewPlayerDocument, baseOptions);
+      }
+export type OnNewPlayerSubscriptionHookResult = ReturnType<typeof useOnNewPlayerSubscription>;
+export type OnNewPlayerSubscriptionResult = Apollo.SubscriptionResult<OnNewPlayerSubscription>;
