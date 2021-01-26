@@ -24,11 +24,6 @@ export type Query = {
 };
 
 
-export type QueryPlayerArgs = {
-  options: UserGameCodeInput;
-};
-
-
 export type QueryPromptArgs = {
   id: Scalars['Float'];
 };
@@ -38,11 +33,6 @@ export type Player = {
   username: Scalars['String'];
   game_code: Scalars['String'];
   id: Scalars['String'];
-};
-
-export type UserGameCodeInput = {
-  username: Scalars['String'];
-  game_code: Scalars['String'];
 };
 
 export type Game = {
@@ -86,6 +76,11 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type UserGameCodeInput = {
+  username: Scalars['String'];
+  game_code: Scalars['String'];
+};
+
 export type GameResponse = {
   __typename?: 'GameResponse';
   errors?: Maybe<Array<FieldError>>;
@@ -100,6 +95,11 @@ export type GameInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   newPlayer: Player;
+};
+
+
+export type SubscriptionNewPlayerArgs = {
+  code: Scalars['String'];
 };
 
 export type CreateMutationVariables = Exact<{
@@ -153,14 +153,27 @@ export type MeQuery = (
   )> }
 );
 
-export type OnNewPlayerSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type PlayerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PlayerQuery = (
+  { __typename?: 'Query' }
+  & { player?: Maybe<(
+    { __typename?: 'Player' }
+    & Pick<Player, 'username' | 'id' | 'game_code'>
+  )> }
+);
+
+export type OnNewPlayerSubscriptionVariables = Exact<{
+  game_code: Scalars['String'];
+}>;
 
 
 export type OnNewPlayerSubscription = (
   { __typename?: 'Subscription' }
   & { newPlayer: (
     { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'username' | 'game_code'>
+    & Pick<Player, 'id' | 'game_code' | 'username'>
   ) }
 );
 
@@ -298,12 +311,52 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
-export const OnNewPlayerDocument = gql`
-    subscription onNewPlayer {
-  newPlayer {
-    id
+export const PlayerDocument = gql`
+    query Player {
+  player {
     username
+    id
     game_code
+  }
+}
+    `;
+export type PlayerComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<PlayerQuery, PlayerQueryVariables>, 'query'>;
+
+    export const PlayerComponent = (props: PlayerComponentProps) => (
+      <ApolloReactComponents.Query<PlayerQuery, PlayerQueryVariables> query={PlayerDocument} {...props} />
+    );
+    
+
+/**
+ * __usePlayerQuery__
+ *
+ * To run a query within a React component, call `usePlayerQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlayerQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlayerQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePlayerQuery(baseOptions?: Apollo.QueryHookOptions<PlayerQuery, PlayerQueryVariables>) {
+        return Apollo.useQuery<PlayerQuery, PlayerQueryVariables>(PlayerDocument, baseOptions);
+      }
+export function usePlayerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlayerQuery, PlayerQueryVariables>) {
+          return Apollo.useLazyQuery<PlayerQuery, PlayerQueryVariables>(PlayerDocument, baseOptions);
+        }
+export type PlayerQueryHookResult = ReturnType<typeof usePlayerQuery>;
+export type PlayerLazyQueryHookResult = ReturnType<typeof usePlayerLazyQuery>;
+export type PlayerQueryResult = Apollo.QueryResult<PlayerQuery, PlayerQueryVariables>;
+export const OnNewPlayerDocument = gql`
+    subscription onNewPlayer($game_code: String!) {
+  newPlayer(code: $game_code) {
+    id
+    game_code
+    username
   }
 }
     `;
@@ -326,10 +379,11 @@ export type OnNewPlayerComponentProps = Omit<ApolloReactComponents.SubscriptionC
  * @example
  * const { data, loading, error } = useOnNewPlayerSubscription({
  *   variables: {
+ *      game_code: // value for 'game_code'
  *   },
  * });
  */
-export function useOnNewPlayerSubscription(baseOptions?: Apollo.SubscriptionHookOptions<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>) {
+export function useOnNewPlayerSubscription(baseOptions: Apollo.SubscriptionHookOptions<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>) {
         return Apollo.useSubscription<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>(OnNewPlayerDocument, baseOptions);
       }
 export type OnNewPlayerSubscriptionHookResult = ReturnType<typeof useOnNewPlayerSubscription>;
