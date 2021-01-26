@@ -1,0 +1,7 @@
+query Player{
+  player {
+    username
+    id
+    game_code
+  }
+}

@@ -1,0 +1,7 @@
+subscription onNewPlayer($game_code: String!) {
+  newPlayer(code: $game_code) {
+    id
+    game_code
+    username
+  }
+}

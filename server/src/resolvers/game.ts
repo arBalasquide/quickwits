@@ -27,7 +27,7 @@ export class GameResolver {
     async me(
         @Ctx() { em, req }: MyContext,
     ){
-        const player = await em.findOne(Player, {username: req.session.userId})
+        const player = await em.findOne(Player, {id: req.session.userId})
         const game = await em.findOne(Game, {game_code: player?.game_code})
         return game;
     }

@@ -20,27 +20,19 @@ export type Query = {
   __typename?: 'Query';
   player?: Maybe<Player>;
   me?: Maybe<Game>;
+  prompt?: Maybe<Prompt>;
 };
 
 
-export type QueryPlayerArgs = {
-  options: UserGameCodeInput;
-};
-
-
-export type QueryMeArgs = {
-  code: Scalars['String'];
+export type QueryPromptArgs = {
+  id: Scalars['Float'];
 };
 
 export type Player = {
   __typename?: 'Player';
   username: Scalars['String'];
   game_code: Scalars['String'];
-};
-
-export type UserGameCodeInput = {
-  username: Scalars['String'];
-  game_code: Scalars['String'];
+  id: Scalars['String'];
 };
 
 export type Game = {
@@ -48,6 +40,12 @@ export type Game = {
   game_code: Scalars['String'];
   players: Array<Scalars['String']>;
   owner: Scalars['String'];
+};
+
+export type Prompt = {
+  __typename?: 'Prompt';
+  id: Scalars['Float'];
+  prompt: Scalars['String'];
 };
 
 export type Mutation = {
@@ -78,6 +76,11 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type UserGameCodeInput = {
+  username: Scalars['String'];
+  game_code: Scalars['String'];
+};
+
 export type GameResponse = {
   __typename?: 'GameResponse';
   errors?: Maybe<Array<FieldError>>;
@@ -87,6 +90,16 @@ export type GameResponse = {
 export type GameInput = {
   game_code: Scalars['String'];
   owner: Scalars['String'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  newPlayer: Player;
+};
+
+
+export type SubscriptionNewPlayerArgs = {
+  code: Scalars['String'];
 };
 
 export type CreateMutationVariables = Exact<{
@@ -126,6 +139,41 @@ export type JoinMutation = (
       { __typename?: 'Player' }
       & Pick<Player, 'username' | 'game_code'>
     )> }
+  ) }
+);
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = (
+  { __typename?: 'Query' }
+  & { me?: Maybe<(
+    { __typename?: 'Game' }
+    & Pick<Game, 'game_code' | 'players' | 'owner'>
+  )> }
+);
+
+export type PlayerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PlayerQuery = (
+  { __typename?: 'Query' }
+  & { player?: Maybe<(
+    { __typename?: 'Player' }
+    & Pick<Player, 'username' | 'id' | 'game_code'>
+  )> }
+);
+
+export type OnNewPlayerSubscriptionVariables = Exact<{
+  game_code: Scalars['String'];
+}>;
+
+
+export type OnNewPlayerSubscription = (
+  { __typename?: 'Subscription' }
+  & { newPlayer: (
+    { __typename?: 'Player' }
+    & Pick<Player, 'id' | 'game_code' | 'username'>
   ) }
 );
 
@@ -223,3 +271,120 @@ export function useJoinMutation(baseOptions?: Apollo.MutationHookOptions<JoinMut
 export type JoinMutationHookResult = ReturnType<typeof useJoinMutation>;
 export type JoinMutationResult = Apollo.MutationResult<JoinMutation>;
 export type JoinMutationOptions = Apollo.BaseMutationOptions<JoinMutation, JoinMutationVariables>;
+export const MeDocument = gql`
+    query Me {
+  me {
+    game_code
+    players
+    owner
+  }
+}
+    `;
+export type MeComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<MeQuery, MeQueryVariables>, 'query'>;
+
+    export const MeComponent = (props: MeComponentProps) => (
+      <ApolloReactComponents.Query<MeQuery, MeQueryVariables> query={MeDocument} {...props} />
+    );
+    
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+      }
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+        }
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const PlayerDocument = gql`
+    query Player {
+  player {
+    username
+    id
+    game_code
+  }
+}
+    `;
+export type PlayerComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<PlayerQuery, PlayerQueryVariables>, 'query'>;
+
+    export const PlayerComponent = (props: PlayerComponentProps) => (
+      <ApolloReactComponents.Query<PlayerQuery, PlayerQueryVariables> query={PlayerDocument} {...props} />
+    );
+    
+
+/**
+ * __usePlayerQuery__
+ *
+ * To run a query within a React component, call `usePlayerQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlayerQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlayerQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePlayerQuery(baseOptions?: Apollo.QueryHookOptions<PlayerQuery, PlayerQueryVariables>) {
+        return Apollo.useQuery<PlayerQuery, PlayerQueryVariables>(PlayerDocument, baseOptions);
+      }
+export function usePlayerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlayerQuery, PlayerQueryVariables>) {
+          return Apollo.useLazyQuery<PlayerQuery, PlayerQueryVariables>(PlayerDocument, baseOptions);
+        }
+export type PlayerQueryHookResult = ReturnType<typeof usePlayerQuery>;
+export type PlayerLazyQueryHookResult = ReturnType<typeof usePlayerLazyQuery>;
+export type PlayerQueryResult = Apollo.QueryResult<PlayerQuery, PlayerQueryVariables>;
+export const OnNewPlayerDocument = gql`
+    subscription onNewPlayer($game_code: String!) {
+  newPlayer(code: $game_code) {
+    id
+    game_code
+    username
+  }
+}
+    `;
+export type OnNewPlayerComponentProps = Omit<ApolloReactComponents.SubscriptionComponentOptions<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>, 'subscription'>;
+
+    export const OnNewPlayerComponent = (props: OnNewPlayerComponentProps) => (
+      <ApolloReactComponents.Subscription<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables> subscription={OnNewPlayerDocument} {...props} />
+    );
+    
+
+/**
+ * __useOnNewPlayerSubscription__
+ *
+ * To run a query within a React component, call `useOnNewPlayerSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useOnNewPlayerSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOnNewPlayerSubscription({
+ *   variables: {
+ *      game_code: // value for 'game_code'
+ *   },
+ * });
+ */
+export function useOnNewPlayerSubscription(baseOptions: Apollo.SubscriptionHookOptions<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>) {
+        return Apollo.useSubscription<OnNewPlayerSubscription, OnNewPlayerSubscriptionVariables>(OnNewPlayerDocument, baseOptions);
+      }
+export type OnNewPlayerSubscriptionHookResult = ReturnType<typeof useOnNewPlayerSubscription>;
+export type OnNewPlayerSubscriptionResult = Apollo.SubscriptionResult<OnNewPlayerSubscription>;

@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import mikroConfig from "./mikro-orm.config";
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
+import { ApolloServer, makeExecutableSchema, PubSub } from "apollo-server-express";
+import { buildTypeDefsAndResolvers } from "type-graphql";
 import { MyContext } from "./types";
 import { PlayerResolver } from "./resolvers/player";
 import { GameResolver } from "./resolvers/game";
@@ -11,64 +11,76 @@ import session from "express-session";
 import connectRedis from "connect-redis";
 import redis from "redis";
 import { MikroORM } from "@mikro-orm/core";
-import cors from "cors";
 import { getPrompts } from "./utils/getPrompts";
 import { PromptResolver } from "./resolvers/prompt";
+import { createServer } from "http";
+import { SubscriptionResolver } from "./resolvers/subscription";
 
 const main = async () => {
-    const orm = await MikroORM.init(mikroConfig);
-    await orm.getMigrator().up();
+  const orm = await MikroORM.init(mikroConfig);
+  await orm.getMigrator().up();
 
-    await getPrompts(PROMPTS_PATH, orm.em);
+  await getPrompts(PROMPTS_PATH, orm.em);
 
-    const app = express();
+  const app = express();
+  
+  const RedisStore = connectRedis(session);
+  const redisClient = redis.createClient();
 
-    const RedisStore = connectRedis(session);
-    const redisClient = redis.createClient();
-
-    app.use(
-        session({
-            name: COOKIE_NAME,
-            store: new RedisStore({ 
-                client: redisClient,
-                disableTouch: true,
-            }),
-            cookie: {
-                maxAge: 1000 * 60 * 60 * 2,
-                httpOnly: true,
-                sameSite: 'lax', // csrf
-                secure: __prod__,
-            },
-            saveUninitialized: false,
-            secret: "probably should keep this in an env file",
-            resave: false,
-        })
-    );
-
-    const apolloServer = new ApolloServer({
-        schema: await buildSchema({
-            resolvers: [GameResolver, PlayerResolver, PromptResolver],
-            validate: false
-        }),
-        context: ({req, res}): MyContext => ({ em: orm.em, req, res}),
-    });
-    
-    apolloServer.applyMiddleware({
-        app,
-        cors: { 
-            origin: 'http://localhost:3000',
-            credentials: true,
-            allowedHeaders: ['Content-Type', 'Authorization'],
-        },
-    });
-
-    app.use(cors());
-
-    app.listen(PORT, () => {
-        console.log("Server started on localhost:", PORT);
+  app.use(
+    session({
+      name: COOKIE_NAME,
+      store: new RedisStore({
+        client: redisClient,
+        disableTouch: true,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 2,
+        httpOnly: true,
+        sameSite: "lax", // csrf
+        secure: __prod__,
+      },
+      saveUninitialized: false,
+      secret: "probably should keep this in an env file",
+      resave: false,
     })
+  );
+
+  const pubsub = new PubSub();
+
+  const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
+    resolvers: [GameResolver, PromptResolver, PlayerResolver, SubscriptionResolver],
+  });
+  
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+  const apolloServer = new ApolloServer({
+    schema,
+    context: async ({ req, res, connection }): Promise<MyContext> => ({ em: orm.em, req, res, pubsub, connection}),
+  });
+
+  apolloServer.applyMiddleware({
+    app,
+    cors: {
+      origin: "http://localhost:3000",
+      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"],
+    },
+  });
+
+  const httpServer = createServer(app);
+  apolloServer.installSubscriptionHandlers(httpServer);
+
+  httpServer.listen({ port: PORT }, () => {
+    console.log(
+      `🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
+    );
+    console.log(
+      `🚀 Subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`
+    );
+  });
 };
 
 main().catch((err) => {
-    console.log(err);
+  console.log(err);
 });

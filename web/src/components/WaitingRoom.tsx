@@ -1,14 +1,40 @@
-import React from "react";
-import { useMeQuery } from "../generated/graphql";
+import React, {useEffect, useState} from "react";
+import {
+    useOnNewPlayerSubscription,
+    usePlayerQuery,
+} from "../generated/graphql";
+import Players from "./Players";
 
-export const WaitingRoom = ({ code }) => {
-  const { data, loading, error } = useMeQuery();
+export const WaitingRoom = ({}) => {
+    const [game_code, setGameCode] = useState("");
+    const [players, setPlayers] = useState([]);
 
-  return (
-    <div>
-      <span>{loading ? <p>Loading ...</p> : <div></div>}</span>
-      <span>{(data !== null && !!data) ? data.me.players.join(", ") : "empty!"}</span>
-    </div>
-  );
+    const player = useOnNewPlayerSubscription({
+        variables: {
+            game_code: game_code,
+        },
+    });
+
+    const {data, loading} = usePlayerQuery();
+
+    useEffect(() => {
+        if (data && data.player) {
+            setGameCode(data.player.game_code);
+        }
+        if (player && player.data) {
+            players.push(player.data.newPlayer.username)
+            setPlayers(players)
+        }
+    }, [data, player])
+
+    if (loading) {
+        return <div>Loading...</div>
+    } else if (players !== []) {
+        return (
+            <Players players={players} />
+        )
+    }
+
 };
+
 export default WaitingRoom;
