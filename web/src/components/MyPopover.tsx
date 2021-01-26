@@ -20,7 +20,7 @@ export const MyPopover = ({form, buttonName}) => {
                 <PopoverContent p={5}>
                     <FocusLock returnFocus persistentFocus={false}>
                         <PopoverArrow />
-                        <PopoverCloseButton />
+                        <PopoverCloseButton color="white" />
                         {form()}
                     </FocusLock>
                 </PopoverContent>
