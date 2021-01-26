@@ -1,7 +1,7 @@
-subscription onNewPlayer {
-  newPlayer{
+subscription onNewPlayer($game_code: String!) {
+  newPlayer(code: $game_code) {
     id
-    username
     game_code
+    username
   }
 }
