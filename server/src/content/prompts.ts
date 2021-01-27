@@ -1,5 +1,6 @@
 export const prompts = [
     "Nothing makes a better example than @@@.",
+    "Prompt 2",
     "Prompt 3",
     "Prompt 4",
     "Prompt 5",
