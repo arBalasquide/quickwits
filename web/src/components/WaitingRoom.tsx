@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  useMeQuery,
-  useOnNewPlayerSubscription,
-  usePlayerQuery,
-} from "../generated/graphql";
+import { useMeQuery, useOnNewPlayerSubscription } from "../generated/graphql";
 import Players from "./Players";
 
 export const WaitingRoom = ({}) => {
