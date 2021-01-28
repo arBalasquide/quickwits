@@ -40,6 +40,7 @@ export type Game = {
   game_code: Scalars['String'];
   players: Array<Scalars['String']>;
   owner: Scalars['String'];
+  prompts: Scalars['String'];
 };
 
 export type Prompt = {
@@ -94,12 +95,12 @@ export type GameInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  newPlayer: Player;
+  newPlayer: Game;
 };
 
 
 export type SubscriptionNewPlayerArgs = {
-  code: Scalars['String'];
+  game_code: Scalars['String'];
 };
 
 export type CreateMutationVariables = Exact<{
@@ -172,8 +173,8 @@ export type OnNewPlayerSubscriptionVariables = Exact<{
 export type OnNewPlayerSubscription = (
   { __typename?: 'Subscription' }
   & { newPlayer: (
-    { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'game_code' | 'username'>
+    { __typename?: 'Game' }
+    & Pick<Game, 'players'>
   ) }
 );
 
@@ -353,10 +354,8 @@ export type PlayerLazyQueryHookResult = ReturnType<typeof usePlayerLazyQuery>;
 export type PlayerQueryResult = Apollo.QueryResult<PlayerQuery, PlayerQueryVariables>;
 export const OnNewPlayerDocument = gql`
     subscription onNewPlayer($game_code: String!) {
-  newPlayer(code: $game_code) {
-    id
-    game_code
-    username
+  newPlayer(game_code: $game_code) {
+    players
   }
 }
     `;

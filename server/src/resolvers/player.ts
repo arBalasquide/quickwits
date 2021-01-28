@@ -37,15 +37,13 @@ class PlayerResponse {
 @Resolver()
 export class PlayerResolver {
   @Query(() => Player, { nullable: true })
-  async player(
-    @Ctx() { em, req }: MyContext,
-  ) {
+  async player(@Ctx() { em, req }: MyContext) {
     // Hasn't joined a game yet
     if (!req.session.userId) {
       return null;
     }
 
-    const player = await em.findOne(Player, {id: req.session.userId});
+    const player = await em.findOne(Player, { id: req.session.userId });
 
     return player;
   }
@@ -137,9 +135,7 @@ export class PlayerResolver {
 
     // Publish new player when they join (for newPlayer subscription)
     await pubsub.publish(NEW_PLAYER, {
-      username: options.username,
       game_code: options.game_code,
-      id: options.username + options.game_code,
     });
 
     return { player };
