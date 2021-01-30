@@ -26,6 +26,6 @@ export class Player {
 
   @Field(() => PromptAndAnswer)
   @Property()
-  prompts: [PromptAndAnswer];
+  prompts?: [PromptAndAnswer];
 }
 

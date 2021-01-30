@@ -9,7 +9,7 @@ export const Countdown = () => {
   useEffect(() => {
     setTimeout(() => {
       setTimeLeft(getTimeUntil(deadline));
-    }, 1000);  // TODO: clear with clearTimeout
+    }, 1000); // TODO: clear with clearTimeout
     // Call function to alert deadline has passed if it has passed
   });
 
