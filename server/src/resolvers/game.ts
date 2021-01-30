@@ -13,7 +13,7 @@ import {
 } from "type-graphql";
 import { Player } from "../entities/Player";
 import { prompts } from "../content/prompts";
-import { MAX_PLAYERS } from "../constants";
+import { MAX_PLAYERS, GAME_STATES } from "../constants";
 
 @InputType()
 class GameInput {
@@ -73,6 +73,7 @@ export class GameResolver {
         .returning("*");
       game = result[0];
     } catch (err) {
+      // TODO: Better error handling.
       if (err.code === "23505") {
         return {
           errors: [
@@ -86,5 +87,40 @@ export class GameResolver {
     }
 
     return { game };
+  }
+
+  @Mutation()
+  async gameLoop(
+    @Arg("game_code") game_code: string,
+    @Ctx() { em }: MyContext
+  ) {
+    let game = await em.findOne(Game, { game_code });
+    while (game && game.state !== GAME_STATES.GAMEOVER) {
+      // Run this loop every 1 or 1/2s to avoid congestion?
+      switch (game.state) {
+        case GAME_STATES.ANSWERS: {
+          break;
+        }
+        case GAME_STATES.VOTES: {
+          break;
+        }
+        case GAME_STATES.NEXT_ROUND: {
+          break;
+        }
+        case GAME_STATES.GAMEOVER: {
+          // show end screen
+          break;
+        }
+        case GAME_STATES.DELETE: {
+          break;
+        }
+      }
+
+      // Update game object.
+      game = await em.findOne(Game, { game_code });
+    }
+
+    // GAME OVER. Fetch player list, delete game, then delete players
+    // TODO: Implement a purge system that deletes stale games/players.
   }
 }
