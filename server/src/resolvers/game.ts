@@ -68,10 +68,12 @@ export class GameResolver {
           owner: options.owner,
           players: [],
           prompts: promptsArr,
+          state: GAME_STATES.LOBBY,
         })
         .returning("*");
       game = result[0];
     } catch (err) {
+      console.log(err);
       // TODO: Better error handling.
       if (err.code === "23505") {
         return {

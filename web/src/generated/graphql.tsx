@@ -33,6 +33,13 @@ export type Player = {
   username: Scalars['String'];
   game_code: Scalars['String'];
   id: Scalars['String'];
+  prompts: PromptAndAnswer;
+};
+
+export type PromptAndAnswer = {
+  __typename?: 'PromptAndAnswer';
+  prompt: Scalars['String'];
+  answer: Scalars['String'];
 };
 
 export type Game = {
@@ -40,7 +47,8 @@ export type Game = {
   game_code: Scalars['String'];
   players: Array<Scalars['String']>;
   owner: Scalars['String'];
-  prompts: Scalars['String'];
+  state: Scalars['String'];
+  currentRound: Scalars['Float'];
 };
 
 export type Prompt = {
@@ -53,6 +61,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   join: PlayerResponse;
   create: GameResponse;
+  gameLoop?: Maybe<Game>;
 };
 
 
@@ -63,6 +72,11 @@ export type MutationJoinArgs = {
 
 export type MutationCreateArgs = {
   options: GameInput;
+};
+
+
+export type MutationGameLoopArgs = {
+  game_code: Scalars['String'];
 };
 
 export type PlayerResponse = {
@@ -150,7 +164,7 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
     { __typename?: 'Game' }
-    & Pick<Game, 'game_code' | 'players' | 'owner'>
+    & Pick<Game, 'game_code' | 'players' | 'owner' | 'state'>
   )> }
 );
 
@@ -278,6 +292,7 @@ export const MeDocument = gql`
     game_code
     players
     owner
+    state
   }
 }
     `;

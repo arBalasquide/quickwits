@@ -55,7 +55,6 @@ export class PlayerResolver {
     @Ctx() { em, req }: MyContext
   ): Promise<PlayerResponse> {
     const id = options.username + options.game_code;
-
     if (options.username.length <= 2) {
       return {
         errors: [
@@ -66,7 +65,6 @@ export class PlayerResolver {
         ],
       };
     }
-
     const game = await em.findOne(Game, { game_code: options.game_code });
     if (!game) {
       return {
@@ -106,6 +104,7 @@ export class PlayerResolver {
       game.players.push(options.username);
       await em.flush();
     } catch (err) {
+      console.log(err);
       const playerExists = err.code === "23505";
       if (playerExists) {
         const isValidCookie = req.session.userId === id;
@@ -125,6 +124,7 @@ export class PlayerResolver {
               username: options.username,
               game_code: options.game_code,
               id: id,
+              prompts: undefined,
             },
           };
         }

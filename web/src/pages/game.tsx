@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Center } from "@chakra-ui/react";
 import { WaitingRoom } from "../components/WaitingRoom";
 import { useMeQuery, useOnNewPlayerSubscription } from "../generated/graphql";
 
@@ -8,6 +7,7 @@ interface joinProp {}
 const Index: React.FC<joinProp> = ({}) => {
   const [players, setPlayers] = useState([]);
   const [gameCode, setGameCode] = useState(null);
+  const [gameState, setGameState] = useState("");
 
   const playersArr = useOnNewPlayerSubscription({
     variables: {
@@ -15,25 +15,26 @@ const Index: React.FC<joinProp> = ({}) => {
     },
   });
 
-  // TODO: Handle loading and
-  // load proper component on game state
   const { data, loading } = useMeQuery();
 
   useEffect(() => {
     if (data && data.me) {
       setPlayers(data.me.players);
       setGameCode(data.me.game_code);
+      setGameState(data.me.state);
     }
     if (playersArr && playersArr.data) {
       setPlayers(playersArr.data.newPlayer.players);
     }
   }, [data, playersArr]);
 
-  return (
-    <Center pt={10} width="100%">
-      <WaitingRoom players={players} />
-    </Center>
-  );
+  if (loading) {
+    return <div>Loading...</div>;
+  } else if (gameState === "lobby") {
+    return <WaitingRoom players={players} />;
+  } else {
+    return <div>You're not in a game.</div>;
+  }
 };
 
 export default Index;

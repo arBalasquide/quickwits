@@ -16,4 +16,5 @@ export const GAME_STATES = {
   VOTES: "votes",
   NEXT_ROUND: "next_round",
   DELETE: "delete",
+  LOBBY: "lobby",
 };

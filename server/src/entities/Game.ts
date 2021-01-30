@@ -20,7 +20,7 @@ export class Game {
   @Property()
   state: string;
 
-  @Field()
+  @Field(() => [String])
   @Property()
-  currentRound: number;
+  prompts: [string];
 }

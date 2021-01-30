@@ -3,5 +3,6 @@ query Me {
     game_code
     players
     owner
+    state
   }
 } 
