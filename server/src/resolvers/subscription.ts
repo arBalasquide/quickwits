@@ -7,7 +7,7 @@ export class SubscriptionResolver {
   @Subscription(() => Game, {
     topics: NEW_PLAYER,
     filter: ({ payload, args }) => {
-      return payload.game_code === args.game_code; // New player game_code === client's game_code
+      return payload.game_code === args.game_code;
     },
   })
   async newPlayer(

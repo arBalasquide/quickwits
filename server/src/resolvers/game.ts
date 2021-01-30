@@ -89,11 +89,12 @@ export class GameResolver {
     return { game };
   }
 
-  @Mutation()
+  @Mutation(() => Game, { nullable: true })
   async gameLoop(
     @Arg("game_code") game_code: string,
     @Ctx() { em }: MyContext
   ) {
+    // Logic for giving prompts and remembering who 1v1 who and order of prompts?
     let game = await em.findOne(Game, { game_code });
     while (game && game.state !== GAME_STATES.GAMEOVER) {
       // Run this loop every 1 or 1/2s to avoid congestion?
@@ -119,7 +120,7 @@ export class GameResolver {
       // Update game object.
       game = await em.findOne(Game, { game_code });
     }
-
+    //😺
     // GAME OVER. Fetch player list, delete game, then delete players
     // TODO: Implement a purge system that deletes stale games/players.
   }
