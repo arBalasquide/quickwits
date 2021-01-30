@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   useMeQuery,
   useOnNewPlayerSubscription,
-  usePlayerQuery,
 } from "../generated/graphql";
 import Players from "./Players";
 
