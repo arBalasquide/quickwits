@@ -13,7 +13,7 @@ import {
 } from "type-graphql";
 import { Player } from "../entities/Player";
 import { prompts } from "../content/prompts";
-import { MAX_PLAYERS, GAME_STATES } from "../constants";
+import { MAX_PLAYERS, GAME_STATES, MAX_ROUNDS } from "../constants";
 
 @InputType()
 class GameInput {
@@ -38,7 +38,7 @@ const shuffleArray = (array: string[]) => {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-  return array.splice(0, MAX_PLAYERS * 3 + 1);
+  return array.splice(0, MAX_PLAYERS * MAX_ROUNDS + 1);
 };
 
 @Resolver()
@@ -55,7 +55,6 @@ export class GameResolver {
     @Arg("options") options: GameInput,
     @Ctx() { em }: MyContext
   ): Promise<GameResponse> {
-    // Clone array instead of referencing it
     let promptsArr = [...prompts];
     promptsArr = shuffleArray(promptsArr);
 
@@ -120,7 +119,6 @@ export class GameResolver {
       // Update game object.
       game = await em.findOne(Game, { game_code });
     }
-    //😺
     // GAME OVER. Fetch player list, delete game, then delete players
     // TODO: Implement a purge system that deletes stale games/players.
   }

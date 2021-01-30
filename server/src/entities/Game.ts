@@ -16,10 +16,6 @@ export class Game {
   @Property()
   owner!: string;
 
-  @Field(() => [String])
-  @Property()
-  prompts!: [string];
-
   @Field()
   @Property()
   state: string;
