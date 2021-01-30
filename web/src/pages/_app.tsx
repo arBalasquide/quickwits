@@ -1,11 +1,4 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  ApolloProvider,
-  HttpLink,
-  InMemoryCache,
-  split,
-} from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { ChakraProvider, ColorModeProvider } from "@chakra-ui/react";
 import theme from "../theme";
 import { socketSplitLink } from "../service/socket";
@@ -15,7 +8,7 @@ function MyApp({ Component, pageProps }) {
     cache: new InMemoryCache(),
     uri: "http://localhost:4000/graphql",
     credentials: "include",
-    link: socketSplitLink
+    link: socketSplitLink,
   });
 
   return (
