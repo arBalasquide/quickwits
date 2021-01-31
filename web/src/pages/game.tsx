@@ -9,7 +9,8 @@ const Index: React.FC<joinProp> = ({}) => {
   const [players, setPlayers] = useState([]);
   const [gameCode, setGameCode] = useState(null);
   const [gameState, setGameState] = useState("");
-
+  // TODO: Fetch this data from player
+  const prompts = ["Donkey Kong Country", "Super Mario Sunshine, Yahoooooo"];
   const playersArr = useOnNewPlayerSubscription({
     variables: {
       game_code: gameCode,
@@ -31,10 +32,10 @@ const Index: React.FC<joinProp> = ({}) => {
 
   if (loading) {
     return <div>Loading...</div>;
-  } else if (gameState === "lobby") {
+  } else if (gameState === "test") {
     return <WaitingRoom players={players} />;
-  } else if (gameState === "prompts") {
-    return <Prompts prompt="donkey kong country"/>;
+  } else if (gameState === "lobby") {
+    return <Prompts prompts={prompts} />;
   } else {
     return <div>You're not in a game.</div>;
   }
