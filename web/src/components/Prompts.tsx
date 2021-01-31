@@ -7,7 +7,7 @@ export const Prompts = ({ prompts }) => {
   return (
     <Container>
       <Formik
-        initialValues={{ answer: "" }}
+        initialValues={{ answer1: "", answer2: "" }}
         onSubmit={(values, actions) => {
           console.log(values); // TODO trigger answerPrompt mutation (pass values)
           actions.setSubmitting(false);
@@ -16,11 +16,19 @@ export const Prompts = ({ prompts }) => {
         {({ isSubmitting }) => (
           <Form>
             <Text>{prompts[0]}</Text>
-            <InputField name="answer" label="Answer" placeholder="" />
+            <InputField
+              name="answer1"
+              label="answer1"
+              placeholder="Funny Answer 😂"
+            />
 
-            <Text>{prompts[1]}</Text>
+            <Text pt={6}>{prompts[1]}</Text>
 
-            <InputField name="answer" label="Answer" placeholder="" />
+            <InputField
+              name="answer2"
+              label="answer2"
+              placeholder="Funny Answer Haha"
+            />
 
             <Button
               mt={4}
@@ -28,7 +36,7 @@ export const Prompts = ({ prompts }) => {
               isLoading={isSubmitting}
               colorScheme="blue"
             >
-              Submit
+              Submit Answers
             </Button>
           </Form>
         )}
