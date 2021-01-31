@@ -32,9 +32,9 @@ const Index: React.FC<joinProp> = ({}) => {
 
   if (loading) {
     return <div>Loading...</div>;
-  } else if (gameState === "test") {
-    return <WaitingRoom players={players} />;
   } else if (gameState === "lobby") {
+    return <WaitingRoom players={players} />;
+  } else if (gameState === "prompts") {
     return <Prompts prompts={prompts} />;
   } else {
     return <div>You're not in a game.</div>;
