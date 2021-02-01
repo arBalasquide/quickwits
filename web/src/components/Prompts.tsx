@@ -5,7 +5,10 @@ import {
   PromptAndAnswer,
   usePlayerQuery,
   useAnswerMutation,
+  useMeQuery,
+  Deadline,
 } from "../generated/graphql";
+import Countdown from "./Countdown";
 import { InputField } from "./InputField";
 
 export const Prompts = ({}) => {
@@ -19,19 +22,26 @@ export const Prompts = ({}) => {
       answer: "",
     },
   ]); // Render blank while loading prompts
+  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
 
   const [answerMutation] = useAnswerMutation();
 
   const { data } = usePlayerQuery();
+  const { data: me } = useMeQuery();
 
   useEffect(() => {
-    if (data && data.player) {
-      setPrompts(data.player.prompts);
+    if (data && data.player && data.player.prompts) setPrompts(data.player.prompts);
+
+    if (me && me.me && me.me.deadlines) {
+      setDeadlines(me.me.deadlines);
     }
-  }, [data]);
+  }, [data, me.me.deadlines]);
 
   return (
     <Container>
+      {deadlines.map((deadline) => (
+        <Countdown deadline={deadline.deadline} />
+      ))}
       <Formik
         initialValues={{ answer1: "", answer2: "" }}
         onSubmit={async (values, { setErrors }) => {
