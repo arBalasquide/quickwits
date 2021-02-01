@@ -3,5 +3,9 @@ query Player{
     username
     id
     game_code
+    prompts{
+      prompt
+      answer
+    }
   }
 }

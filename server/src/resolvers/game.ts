@@ -38,7 +38,7 @@ const shuffleArray = (array: string[]) => {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-  return array.splice(0, MAX_PLAYERS * MAX_ROUNDS + 1);
+  return array.splice(0, MAX_PLAYERS * MAX_ROUNDS * 2 + 1);
 };
 
 @Resolver()
@@ -90,38 +90,32 @@ export class GameResolver {
     return { game };
   }
 
-  @Mutation(() => Game, { nullable: true })
-  async gameLoop(
-    @Arg("game_code") game_code: string,
-    @Ctx() { em }: MyContext
-  ) {
-    // Logic for giving prompts and remembering who 1v1 who and order of prompts?
-    let game = await em.findOne(Game, { game_code });
-    while (game && game.state !== GAME_STATES.GAMEOVER) {
-      // Run this loop every 1 or 1/2s to avoid congestion?
-      switch (game.state) {
-        case GAME_STATES.ANSWERS: {
-          break;
-        }
-        case GAME_STATES.VOTES: {
-          break;
-        }
-        case GAME_STATES.NEXT_ROUND: {
-          break;
-        }
-        case GAME_STATES.GAMEOVER: {
-          // show end screen
-          break;
-        }
-        case GAME_STATES.DELETE: {
-          break;
-        }
-      }
+  @Mutation(() => Boolean)
+  async startGame(@Ctx() { em, req }: MyContext) {
+    const player = await em.findOne(Player, { id: req.session.userId });
+    const game = await em.findOne(Game, { game_code: player?.game_code });
 
-      // Update game object.
-      game = await em.findOne(Game, { game_code });
+    // TODO: Error occured. Do not let game proceed.
+    // Perhaps a big try catch for everything in this mutator
+    if (!game) return false;
+
+    // TODO: Timestamp/timer
+    for (let i = 0; i < game.players.length; i++) {
+      const username = game.players[i];
+      const temp = await em.findOne(Player, {
+        username,
+        game_code: game.game_code,
+      });
+      // TODO: Make it so '!' is not needed
+      temp!.prompts = [
+        { prompt: game.prompts.pop()!, answer: "" },
+        { prompt: game.prompts.pop()!, answer: "" },
+      ];
+      em.persistAndFlush(temp!); // TODO: NO TO '!'
     }
-    // GAME OVER. Fetch player list, delete game, then delete players
-    // TODO: Implement a purge system that deletes stale games/players.
+
+    game.state = GAME_STATES.ANSWERS;
+    em.persistAndFlush(game);
+    return true;
   }
 }

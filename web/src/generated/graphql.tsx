@@ -33,7 +33,7 @@ export type Player = {
   username: Scalars['String'];
   game_code: Scalars['String'];
   id: Scalars['String'];
-  prompts: PromptAndAnswer;
+  prompts?: Maybe<Array<PromptAndAnswer>>;
 };
 
 export type PromptAndAnswer = {
@@ -48,7 +48,7 @@ export type Game = {
   players: Array<Scalars['String']>;
   owner: Scalars['String'];
   state: Scalars['String'];
-  currentRound: Scalars['Float'];
+  prompts: Array<Scalars['String']>;
 };
 
 export type Prompt = {
@@ -61,7 +61,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   join: PlayerResponse;
   create: GameResponse;
-  gameLoop?: Maybe<Game>;
+  startGame: Scalars['Boolean'];
 };
 
 
@@ -72,11 +72,6 @@ export type MutationJoinArgs = {
 
 export type MutationCreateArgs = {
   options: GameInput;
-};
-
-
-export type MutationGameLoopArgs = {
-  game_code: Scalars['String'];
 };
 
 export type PlayerResponse = {
@@ -176,6 +171,10 @@ export type PlayerQuery = (
   & { player?: Maybe<(
     { __typename?: 'Player' }
     & Pick<Player, 'username' | 'id' | 'game_code'>
+    & { prompts?: Maybe<Array<(
+      { __typename?: 'PromptAndAnswer' }
+      & Pick<PromptAndAnswer, 'prompt' | 'answer'>
+    )>> }
   )> }
 );
 
@@ -333,6 +332,10 @@ export const PlayerDocument = gql`
     username
     id
     game_code
+    prompts {
+      prompt
+      answer
+    }
   }
 }
     `;

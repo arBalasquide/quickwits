@@ -104,7 +104,6 @@ export class PlayerResolver {
       game.players.push(options.username);
       await em.flush();
     } catch (err) {
-      console.log(err);
       const playerExists = err.code === "23505";
       if (playerExists) {
         const isValidCookie = req.session.userId === id;
@@ -124,7 +123,7 @@ export class PlayerResolver {
               username: options.username,
               game_code: options.game_code,
               id: id,
-              prompts: undefined,
+              prompts: [],
             },
           };
         }

@@ -1,9 +1,29 @@
 import { Button, Text, Container } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { PromptAndAnswer, usePlayerQuery } from "../generated/graphql";
 import { InputField } from "./InputField";
 
-export const Prompts = ({ prompts }) => {
+export const Prompts = ({}) => {
+  const [prompts, setPrompts] = useState<PromptAndAnswer[]>([
+    {
+      prompt: "",
+      answer: "",
+    },
+    {
+      prompt: "",
+      answer: "",
+    },
+  ]); // Render blank while loading prompts
+
+  const { data } = usePlayerQuery();
+
+  useEffect(() => {
+    if (data && data.player) {
+      setPrompts(data.player.prompts);
+    }
+  }, [data]);
+
   return (
     <Container>
       <Formik
@@ -15,14 +35,14 @@ export const Prompts = ({ prompts }) => {
       >
         {({ isSubmitting }) => (
           <Form>
-            <Text>{prompts[0]}</Text>
+            <Text>{prompts[0].prompt}</Text>
             <InputField
               name="answer1"
               label="answer1"
               placeholder="Funny Answer 😂"
             />
 
-            <Text pt={6}>{prompts[1]}</Text>
+            <Text pt={6}>{prompts[1].prompt}</Text>
 
             <InputField
               name="answer2"
