@@ -152,6 +152,14 @@ export type JoinMutation = (
   ) }
 );
 
+export type StartGameMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type StartGameMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'startGame'>
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -285,6 +293,41 @@ export function useJoinMutation(baseOptions?: Apollo.MutationHookOptions<JoinMut
 export type JoinMutationHookResult = ReturnType<typeof useJoinMutation>;
 export type JoinMutationResult = Apollo.MutationResult<JoinMutation>;
 export type JoinMutationOptions = Apollo.BaseMutationOptions<JoinMutation, JoinMutationVariables>;
+export const StartGameDocument = gql`
+    mutation StartGame {
+  startGame
+}
+    `;
+export type StartGameMutationFn = Apollo.MutationFunction<StartGameMutation, StartGameMutationVariables>;
+export type StartGameComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<StartGameMutation, StartGameMutationVariables>, 'mutation'>;
+
+    export const StartGameComponent = (props: StartGameComponentProps) => (
+      <ApolloReactComponents.Mutation<StartGameMutation, StartGameMutationVariables> mutation={StartGameDocument} {...props} />
+    );
+    
+
+/**
+ * __useStartGameMutation__
+ *
+ * To run a mutation, you first call `useStartGameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useStartGameMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [startGameMutation, { data, loading, error }] = useStartGameMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useStartGameMutation(baseOptions?: Apollo.MutationHookOptions<StartGameMutation, StartGameMutationVariables>) {
+        return Apollo.useMutation<StartGameMutation, StartGameMutationVariables>(StartGameDocument, baseOptions);
+      }
+export type StartGameMutationHookResult = ReturnType<typeof useStartGameMutation>;
+export type StartGameMutationResult = Apollo.MutationResult<StartGameMutation>;
+export type StartGameMutationOptions = Apollo.BaseMutationOptions<StartGameMutation, StartGameMutationVariables>;
 export const MeDocument = gql`
     query Me {
   me {

@@ -1,11 +1,28 @@
+import { useMutation } from "@apollo/client";
 import { Button } from "@chakra-ui/react";
+import { StartGameDocument } from "../generated/graphql";
 
 export const StartButton = () => {
+  const [startGame, { loading }] = useMutation(StartGameDocument);
   return (
     <>
-      <Button colorScheme="blue" m={2} position="absolute" top={0} right={0}>
-        Start Game
-      </Button>
+      <form
+        onSubmit={() => {
+          startGame({});
+        }}
+      >
+        <Button
+          colorScheme="blue"
+          m={2}
+          position="absolute"
+          top={0}
+          right={0}
+          isLoading={loading}
+          type="submit"
+        >
+          Start Game
+        </Button>
+      </form>
     </>
   );
 };
