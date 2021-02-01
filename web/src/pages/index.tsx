@@ -37,12 +37,14 @@ const Index: React.FC<joinProp> = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
+              color="white"
               name="username"
               label="Username"
               placeholder="Username"
             />
             <Box mt={4}>
               <InputField
+                color="white"
                 name="game_code"
                 label="Game Code"
                 placeholder="Game Code"
@@ -93,12 +95,14 @@ const Index: React.FC<joinProp> = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
+              color="white"
               name="username"
               label="Username"
               placeholder="Username"
             />
             <Box mt={4}>
               <InputField
+                color="white"
                 name="game_code"
                 label="Game Code"
                 placeholder="Game Code"

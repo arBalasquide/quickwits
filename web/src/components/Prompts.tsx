@@ -37,16 +37,18 @@ export const Prompts = ({}) => {
           <Form>
             <Text>{prompts[0].prompt}</Text>
             <InputField
+              color="black"
               name="answer1"
-              label="answer1"
+              label=""
               placeholder="Funny Answer 😂"
             />
 
             <Text pt={6}>{prompts[1].prompt}</Text>
 
             <InputField
+              color="black"
               name="answer2"
-              label="answer2"
+              label=""
               placeholder="Funny Answer? 😳"
             />
 

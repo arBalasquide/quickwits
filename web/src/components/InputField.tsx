@@ -8,12 +8,14 @@ import { useField } from "formik";
 import React from "react";
 
 type InputFieldProps = {
+  color: string;
   label: string;
   name: string;
   placeholder: string;
 };
 
 export const InputField: React.FC<InputFieldProps> = ({
+  color,
   label,
   placeholder,
   ...props
@@ -25,7 +27,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         {label}
       </FormLabel>
       <Input
-        color="white"
+        color={color}
         {...field}
         {...props}
         id={field.name}
