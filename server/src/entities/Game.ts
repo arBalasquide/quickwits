@@ -2,6 +2,15 @@ import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
+export class Deadline {
+  @Field()
+  state: string;
+
+  @Field()
+  deadline: Date;
+}
+
+@ObjectType()
 @Entity()
 export class Game {
   @Field(() => String)
@@ -23,4 +32,7 @@ export class Game {
   @Field(() => [String])
   @Property()
   prompts: [string];
+
+  @Field(() => [Deadline], { nullable: true })
+  deadlines: Deadline[];
 }

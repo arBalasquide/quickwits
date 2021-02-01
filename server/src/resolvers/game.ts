@@ -32,6 +32,15 @@ class GameResponse {
   game?: Game;
 }
 
+@ObjectType()
+class StateResponse {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+
+  @Field(() => String, { nullable: true })
+  state?: String;
+}
+
 // Shuffle array O(N) and grab prompts from the array
 const shuffleArray = (array: string[]) => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -114,8 +123,70 @@ export class GameResolver {
       await em.persistAndFlush(temp!); // TODO: NO TO '!'
     }
 
+    // Add timestamp to db
+    let votingDeadline = new Date();
+    votingDeadline = new Date(votingDeadline.getTime() + 1000 * 30);
+
+    console.log("DEADLINES", game.deadlines);
+    if (game.deadlines === null || game.deadlines === undefined)
+      game.deadlines = [];
+    game.deadlines.push({ state: GAME_STATES.VOTES, deadline: votingDeadline });
+
+    // Callback to change state
+    setTimeout(this.setState, 1000 * 30, game.game_code, GAME_STATES.VOTES, { em });
+
     game.state = GAME_STATES.ANSWERS;
     em.persistAndFlush(game);
+
     return true;
+  }
+
+  // TODO: replace with nextState mutation, that does not require "state" parameter
+  // nextState will increment the state when it notices that a state deadline has expired
+  @Mutation(() => StateResponse)
+  async setState(
+    @Arg("game_code") game_code: string,
+    @Arg("state") state: string,
+    @Ctx() { em }: MyContext
+  ): Promise<StateResponse> {
+    const game = await em.findOne(Game, { game_code });
+
+    if (!game)
+      return {
+        errors: [
+          {
+            field: "game_code",
+            message: "Game does not exist",
+          },
+        ],
+      };
+
+    game.state = state;
+
+    // Helper for nextState():
+    // let state = "";
+    // switch (game.state) {
+    //   case GAME_STATES.LOBBY:
+    //     state = GAME_STATES.ANSWERS;
+    //     break;
+
+    //   case GAME_STATES.ANSWERS:
+    //     state = GAME_STATES.VOTES;
+    //     break;
+
+    //   case GAME_STATES.VOTES:
+    //     state = GAME_STATES.GAMEOVER;
+    //     break;
+
+    //   case GAME_STATES.GAMEOVER:
+    //     state = GAME_STATES.DELETE;
+    //     break;
+
+    //   default:
+    //     state = GAME_STATES.DELETE;
+    //     break;
+    // }
+
+    return { state };
   }
 }
