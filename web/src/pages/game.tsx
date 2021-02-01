@@ -29,12 +29,15 @@ const Index: React.FC<joinProp> = ({}) => {
     }
   }, [data, playersArr]);
 
+  console.log(data, playersArr, gameCode, gameState);
   if (loading) {
     return <div>Loading...</div>;
   } else if (gameState === "lobby") {
     return <WaitingRoom players={players} />;
   } else if (gameState === "answers") {
     return <Prompts />;
+  } else if (gameState === "votes") {
+    return <div>Place Holder Votes</div>;
   } else {
     return <div>You're not in a game.</div>;
   }

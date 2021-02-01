@@ -1,0 +1,3 @@
+mutation Answer($answer1: String!, $answer2: String!) {
+  answer(options: { answer1: $answer1, answer2: $answer2 })
+}

@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
+  DateTime: any;
 };
 
 export type Query = {
@@ -49,7 +51,15 @@ export type Game = {
   owner: Scalars['String'];
   state: Scalars['String'];
   prompts: Array<Scalars['String']>;
+  deadlines?: Maybe<Array<Deadline>>;
 };
+
+export type Deadline = {
+  __typename?: 'Deadline';
+  state: Scalars['String'];
+  deadline: Scalars['DateTime'];
+};
+
 
 export type Prompt = {
   __typename?: 'Prompt';
@@ -60,8 +70,10 @@ export type Prompt = {
 export type Mutation = {
   __typename?: 'Mutation';
   join: PlayerResponse;
+  answer: Scalars['Boolean'];
   create: GameResponse;
   startGame: Scalars['Boolean'];
+  setState: StateResponse;
 };
 
 
@@ -70,8 +82,19 @@ export type MutationJoinArgs = {
 };
 
 
+export type MutationAnswerArgs = {
+  options: Answers;
+};
+
+
 export type MutationCreateArgs = {
   options: GameInput;
+};
+
+
+export type MutationSetStateArgs = {
+  state: Scalars['String'];
+  game_code: Scalars['String'];
 };
 
 export type PlayerResponse = {
@@ -91,6 +114,11 @@ export type UserGameCodeInput = {
   game_code: Scalars['String'];
 };
 
+export type Answers = {
+  answer1: Scalars['String'];
+  answer2: Scalars['String'];
+};
+
 export type GameResponse = {
   __typename?: 'GameResponse';
   errors?: Maybe<Array<FieldError>>;
@@ -102,6 +130,12 @@ export type GameInput = {
   owner: Scalars['String'];
 };
 
+export type StateResponse = {
+  __typename?: 'StateResponse';
+  errors?: Maybe<Array<FieldError>>;
+  state?: Maybe<Scalars['String']>;
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   newPlayer: Game;
@@ -111,6 +145,17 @@ export type Subscription = {
 export type SubscriptionNewPlayerArgs = {
   game_code: Scalars['String'];
 };
+
+export type AnswerMutationVariables = Exact<{
+  answer1: Scalars['String'];
+  answer2: Scalars['String'];
+}>;
+
+
+export type AnswerMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'answer'>
+);
 
 export type CreateMutationVariables = Exact<{
   game_code: Scalars['String'];
@@ -200,6 +245,43 @@ export type OnNewPlayerSubscription = (
 );
 
 
+export const AnswerDocument = gql`
+    mutation Answer($answer1: String!, $answer2: String!) {
+  answer(options: {answer1: $answer1, answer2: $answer2})
+}
+    `;
+export type AnswerMutationFn = Apollo.MutationFunction<AnswerMutation, AnswerMutationVariables>;
+export type AnswerComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<AnswerMutation, AnswerMutationVariables>, 'mutation'>;
+
+    export const AnswerComponent = (props: AnswerComponentProps) => (
+      <ApolloReactComponents.Mutation<AnswerMutation, AnswerMutationVariables> mutation={AnswerDocument} {...props} />
+    );
+    
+
+/**
+ * __useAnswerMutation__
+ *
+ * To run a mutation, you first call `useAnswerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAnswerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [answerMutation, { data, loading, error }] = useAnswerMutation({
+ *   variables: {
+ *      answer1: // value for 'answer1'
+ *      answer2: // value for 'answer2'
+ *   },
+ * });
+ */
+export function useAnswerMutation(baseOptions?: Apollo.MutationHookOptions<AnswerMutation, AnswerMutationVariables>) {
+        return Apollo.useMutation<AnswerMutation, AnswerMutationVariables>(AnswerDocument, baseOptions);
+      }
+export type AnswerMutationHookResult = ReturnType<typeof useAnswerMutation>;
+export type AnswerMutationResult = Apollo.MutationResult<AnswerMutation>;
+export type AnswerMutationOptions = Apollo.BaseMutationOptions<AnswerMutation, AnswerMutationVariables>;
 export const CreateDocument = gql`
     mutation Create($game_code: String!, $owner: String!) {
   create(options: {game_code: $game_code, owner: $owner}) {

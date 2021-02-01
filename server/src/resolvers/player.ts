@@ -24,6 +24,14 @@ class UserGameCodeInput {
   game_code: string;
 }
 
+@InputType()
+class Answers {
+  @Field()
+  answer1: string;
+  @Field()
+  answer2: string;
+}
+
 // TODO: Possibly can abstract this component. Used here and in the game resolver.
 @ObjectType()
 class PlayerResponse {
@@ -82,8 +90,8 @@ export class PlayerResolver {
         errors: [
           {
             field: "state",
-            message: "The game has already started."
-          }
+            message: "The game has already started.",
+          },
         ],
       };
 
@@ -148,5 +156,18 @@ export class PlayerResolver {
     });
 
     return { player };
+  }
+
+  @Mutation(() => Boolean)
+  async answer(
+    @Arg("options") options: Answers,
+    @Ctx() { em, req }: MyContext
+  ) {
+    const player = await em.findOne(Player, { id: req.session.userId });
+    if (!player) return false;
+    player.prompts[0].answer = options.answer1;
+    player.prompts[1].answer = options.answer2;
+    em.persistAndFlush(player);
+    return true;
   }
 }

@@ -1,7 +1,11 @@
 import { Button, Text, Container } from "@chakra-ui/react";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form } from "formik";
 import React, { useEffect, useState } from "react";
-import { PromptAndAnswer, usePlayerQuery } from "../generated/graphql";
+import {
+  PromptAndAnswer,
+  usePlayerQuery,
+  useAnswerMutation,
+} from "../generated/graphql";
 import { InputField } from "./InputField";
 
 export const Prompts = ({}) => {
@@ -16,6 +20,8 @@ export const Prompts = ({}) => {
     },
   ]); // Render blank while loading prompts
 
+  const [answerMutation] = useAnswerMutation();
+
   const { data } = usePlayerQuery();
 
   useEffect(() => {
@@ -28,9 +34,20 @@ export const Prompts = ({}) => {
     <Container>
       <Formik
         initialValues={{ answer1: "", answer2: "" }}
-        onSubmit={(values, actions) => {
-          console.log(values); // TODO trigger answerPrompt mutation (pass values)
-          actions.setSubmitting(false);
+        onSubmit={async (values, { setErrors }) => {
+          const answers = await answerMutation({
+            variables: {
+              answer1: values.answer1,
+              answer2: values.answer2,
+            },
+          });
+          if (!answers.data.answer) {
+            // TODO: Better error handling
+            console.log("Error occured while answering.");
+          } else {
+            // TODO: Trigger component to render waiting screen
+            console.log("Answers submitted");
+          }
         }}
       >
         {({ isSubmitting }) => (
