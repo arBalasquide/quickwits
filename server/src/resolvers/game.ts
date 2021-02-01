@@ -111,7 +111,7 @@ export class GameResolver {
         { prompt: game.prompts.pop()!, answer: "" },
         { prompt: game.prompts.pop()!, answer: "" },
       ];
-      em.persistAndFlush(temp!); // TODO: NO TO '!'
+      await em.persistAndFlush(temp!); // TODO: NO TO '!'
     }
 
     game.state = GAME_STATES.ANSWERS;
