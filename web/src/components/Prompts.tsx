@@ -47,7 +47,7 @@ export const Prompts = ({}) => {
             <InputField
               name="answer2"
               label="answer2"
-              placeholder="Funny Answer Haha"
+              placeholder="Funny Answer? 😳"
             />
 
             <Button
