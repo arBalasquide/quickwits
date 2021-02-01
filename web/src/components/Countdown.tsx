@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import getTimeUntil from "../utils/getTimeUntil";
 
-export const Countdown = () => {
+export const Countdown = ({ deadline }) => {
   // TODO: get deadline from database
-  const deadline = new Date("2021-02-01");
   const [timeLeft, setTimeLeft] = useState(getTimeUntil(deadline));
 
   useEffect(() => {
