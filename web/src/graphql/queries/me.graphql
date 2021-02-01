@@ -4,5 +4,9 @@ query Me {
     players
     owner
     state
+    deadlines {
+      state
+      deadline
+    }
   }
 } 

@@ -213,6 +213,10 @@ export type MeQuery = (
   & { me?: Maybe<(
     { __typename?: 'Game' }
     & Pick<Game, 'game_code' | 'players' | 'owner' | 'state'>
+    & { deadlines?: Maybe<Array<(
+      { __typename?: 'Deadline' }
+      & Pick<Deadline, 'state' | 'deadline'>
+    )>> }
   )> }
 );
 
@@ -417,6 +421,10 @@ export const MeDocument = gql`
     players
     owner
     state
+    deadlines {
+      state
+      deadline
+    }
   }
 }
     `;
