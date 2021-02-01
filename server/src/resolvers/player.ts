@@ -14,7 +14,7 @@ import {
   PubSubEngine,
 } from "type-graphql";
 import { Game } from "../entities/Game";
-import { MAX_PLAYERS, NEW_PLAYER, __prod__ } from "../constants";
+import { GAME_STATES, MAX_PLAYERS, NEW_PLAYER, __prod__ } from "../constants";
 
 @InputType()
 class UserGameCodeInput {
@@ -76,6 +76,16 @@ export class PlayerResolver {
         ],
       };
     }
+
+    if (game.state !== GAME_STATES.LOBBY)
+      return {
+        errors: [
+          {
+            field: "state",
+            message: "The game has already started."
+          }
+        ],
+      };
 
     if (__prod__ && game.players.length >= MAX_PLAYERS) {
       return {
