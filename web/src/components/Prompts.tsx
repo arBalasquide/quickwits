@@ -30,7 +30,8 @@ export const Prompts = ({}) => {
   const { data: me } = useMeQuery();
 
   useEffect(() => {
-    if (data && data.player && data.player.prompts) setPrompts(data.player.prompts);
+    if (data && data.player && data.player.prompts)
+      setPrompts(data.player.prompts);
 
     if (me && me.me && me.me.deadlines) {
       setDeadlines(me.me.deadlines);

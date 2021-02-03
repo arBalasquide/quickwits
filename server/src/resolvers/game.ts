@@ -104,23 +104,55 @@ export class GameResolver {
     const player = await em.findOne(Player, { id: req.session.userId });
     const game = await em.findOne(Game, { game_code: player?.game_code });
 
-    // TODO: Error occured. Do not let game proceed.
-    // Perhaps a big try catch for everything in this mutator
-    if (!game) return false;
+    // TODO: Handle errors better. Show in front-end what happened.
+    if (!game) {
+      console.log("Player: ", player, "Game: ", game, "req: ", req.session);
+      return false;
+    }
 
-    // TODO: Timestamp/timer
+    // TODO: Shuffle players array for randomness.
+    // Really ugly solution, fix plz.
+    let firstPlayer;
+    let temp: any;
     for (let i = 0; i < game.players.length; i++) {
       const username = game.players[i];
-      const temp = await em.findOne(Player, {
-        username,
-        game_code: game.game_code,
-      });
-      // TODO: Make it so '!' is not needed
-      temp!.prompts = [
-        { prompt: game.prompts.pop()!, answer: "" },
-        { prompt: game.prompts.pop()!, answer: "" },
-      ];
-      await em.persistAndFlush(temp!); // TODO: NO TO '!'
+      if (!firstPlayer) {
+        firstPlayer = await em.findOne(Player, {
+          username,
+          game_code: game.game_code,
+        });
+
+        if (!firstPlayer) return false;
+        else {
+          firstPlayer.prompts = [
+            { prompt: game.prompts.pop()!, answer: "" },
+            { prompt: game.prompts.pop()!, answer: "" },
+          ];
+          temp = firstPlayer;
+        }
+      } else if (i != game.players.length - 1) {
+        const nextPlayer = await em.findOne(Player, {
+          username,
+          game_code: game.game_code,
+        });
+
+        nextPlayer!.prompts = [
+          { prompt: temp!.prompts[1].prompt, answer: "" },
+          { prompt: game.prompts.pop()!, answer: "" },
+        ];
+        temp = nextPlayer;
+      } else {
+        const nextPlayer = await em.findOne(Player, {
+          username,
+          game_code: game.game_code,
+        });
+        nextPlayer!.prompts = [
+          { prompt: temp!.prompts[1].prompt, answer: "" },
+          { prompt: firstPlayer.prompts[0].prompt, answer: "" },
+        ];
+      }
+
+      await em.persistAndFlush(temp);
     }
 
     // Add timestamp to db
@@ -133,7 +165,9 @@ export class GameResolver {
     game.deadlines.push({ state: GAME_STATES.VOTES, deadline: votingDeadline });
 
     // Callback to change state
-    setTimeout(this.setState, 1000 * 30, game.game_code, GAME_STATES.VOTES, { em });
+    setTimeout(this.setState, 1000 * 30, game.game_code, GAME_STATES.VOTES, {
+      em,
+    });
 
     game.state = GAME_STATES.ANSWERS;
     em.persistAndFlush(game);
