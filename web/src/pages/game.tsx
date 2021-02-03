@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Prompts from "../components/Prompts";
+import Vote from "../components/Vote";
 import { WaitingRoom } from "../components/WaitingRoom";
 import { useMeQuery, useOnNewPlayerSubscription } from "../generated/graphql";
 
@@ -37,7 +38,7 @@ const Index: React.FC<joinProp> = ({}) => {
   } else if (gameState === "answers") {
     return <Prompts />;
   } else if (gameState === "votes") {
-    return <div>Place Holder Votes</div>;
+    return <Vote />;
   } else {
     return <div>You're not in a game.</div>;
   }
