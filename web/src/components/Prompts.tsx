@@ -39,7 +39,7 @@ export const Prompts = ({}) => {
   }, [data, me.me.deadlines]);
 
   return (
-    <Container>
+    <Container p={10}>
       {deadlines.map((deadline) => (
         <Countdown deadline={deadline.deadline} />
       ))}
@@ -84,7 +84,8 @@ export const Prompts = ({}) => {
               mt={4}
               type="submit"
               isLoading={isSubmitting}
-              colorScheme="blue"
+              bg="blue.300"
+              borderRadius="md"
             >
               Submit Answers
             </Button>

@@ -34,6 +34,11 @@ const PromptCard = ({ prompt, answers }) => {
           </Box>
         </Box>
       </SimpleGrid>
+      <Center>
+        <Text fontSize="md" p={4}>
+          Choose your favorite answer!
+        </Text>
+      </Center>
     </Container>
   );
 };

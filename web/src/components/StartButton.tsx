@@ -22,13 +22,15 @@ export const StartButton = () => {
         {({ isSubmitting }) => (
           <Form>
             <Button
-              colorScheme="blue"
+              p={5}
+              bg="blue.300"
               m={2}
               position="absolute"
               top={0}
               right={0}
               isLoading={isSubmitting}
               type="submit"
+              borderRadius="md"
             >
               Start Game
             </Button>

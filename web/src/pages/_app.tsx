@@ -2,6 +2,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { ChakraProvider, ColorModeProvider } from "@chakra-ui/react";
 import theme from "../theme";
 import { socketSplitLink } from "../service/socket";
+import Header from "../components/MyHeader";
 
 function MyApp({ Component, pageProps }) {
   const client = new ApolloClient({
@@ -14,6 +15,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <ApolloProvider client={client}>
       <ChakraProvider resetCSS theme={theme}>
+        <Header />
         <ColorModeProvider
           options={{
             useSystemColorMode: true,
