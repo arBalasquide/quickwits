@@ -1,5 +1,5 @@
 import { Center } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React from "react";
 import Players from "./Players";
 import StartButton from "./StartButton";
 
