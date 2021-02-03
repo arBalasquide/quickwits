@@ -102,11 +102,17 @@ export class GameResolver {
   @Mutation(() => Boolean)
   async startGame(@Ctx() { em, req }: MyContext) {
     const player = await em.findOne(Player, { id: req.session.userId });
-    const game = await em.findOne(Game, { game_code: player?.game_code });
 
+    const game = await em.findOne(Game, { game_code: player?.game_code });
     // TODO: Handle errors better. Show in front-end what happened.
     if (!game) {
       console.log("Player: ", player, "Game: ", game, "req: ", req.session);
+      return false;
+    }
+
+    // Only let owner start game. Perhaps better to implement
+    // this in the front end.
+    if (player?.username !== game.owner) {
       return false;
     }
 
