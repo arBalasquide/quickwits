@@ -23,7 +23,9 @@ export const MyPopover = ({ form, buttonName }) => {
         closeOnBlur={false}
       >
         <PopoverTrigger>
-          <Button colorScheme="blue">{buttonName}</Button>
+          <Button p={6} colorScheme="blue">
+            {buttonName}
+          </Button>
         </PopoverTrigger>
         <PopoverContent p={5}>
           <FocusLock returnFocus persistentFocus={false}>

@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { ChakraProvider, ColorModeProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider, ColorModeProvider } from "@chakra-ui/react";
 import theme from "../theme";
 import { socketSplitLink } from "../service/socket";
 import Header from "../components/MyHeader";

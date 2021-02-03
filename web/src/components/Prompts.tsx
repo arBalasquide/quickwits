@@ -84,7 +84,7 @@ export const Prompts = ({}) => {
               mt={4}
               type="submit"
               isLoading={isSubmitting}
-              bg="blue.300"
+              colorScheme="blue"
               borderRadius="md"
             >
               Submit Answers
