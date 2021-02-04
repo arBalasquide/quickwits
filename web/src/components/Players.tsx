@@ -1,36 +1,31 @@
-import {
-  Container,
-  Grid,
-  Text,
-  HStack,
-  Circle,
-  Center,
-} from "@chakra-ui/react";
+import { SimpleGrid, Text, Circle } from "@chakra-ui/react";
 
 const createCirles = (players: [string]) => {
   let body = [];
   for (var i = 0; i < players.length; i++) {
     body.push(
-      <Circle size="200px" bg="tomato" m={2}>
-        <Text fontSize="1.5em" color="blue.900" isTruncated>
+      <Circle
+        size="200px"
+        bg="purple.500"
+        boxShadow="md"
+        borderWidth="2px"
+        borderColor="black"
+      >
+        <Text fontSize="1.5em" color="black" isTruncated>
           {players[i]}
         </Text>
       </Circle>
     );
   }
 
-  return <Center>{body}</Center>;
+  return body;
 };
 
 export const Players = ({ players }) => {
   return (
-    <Container maxW={"80%"}>
-      <Grid>
-        <Center>
-          <HStack>{createCirles(players)}</HStack>
-        </Center>
-      </Grid>
-    </Container>
+    <SimpleGrid columns={[1, 2, 4]} gap={6}>
+      {createCirles(players)}
+    </SimpleGrid>
   );
 };
 
