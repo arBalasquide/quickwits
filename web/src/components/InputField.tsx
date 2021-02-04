@@ -27,7 +27,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         {label}
       </FormLabel>
       <Input
-        color={color}
+        bgColor="black"
         {...field}
         {...props}
         id={field.name}
