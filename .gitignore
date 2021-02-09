@@ -3,4 +3,5 @@
 web/.next/
 server/src/migrations
 */yarn.lock
-*/package-lock.json
+**/package-lock.json
+**/yarn-error.log
