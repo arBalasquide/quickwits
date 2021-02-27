@@ -7,7 +7,8 @@
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
     "start": "node dist/index.js",
-    "create:migration": "mikro-orm migration:create"
+    "create:migration": "mikro-orm migration:create",
+    "rebuild": "dropdb quickwits && createdb quickwits && rm -rf ./dist && rm -rf ./src/migrations* && yarn create:migration"
   },
   "author": "",
   "license": "ISC",
