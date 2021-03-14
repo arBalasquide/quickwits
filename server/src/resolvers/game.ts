@@ -50,6 +50,36 @@ const shuffleArray = (array: string[]) => {
   return array.splice(0, MAX_PLAYERS * MAX_ROUNDS * 2 + 1);
 };
 
+// TODO: Shuffle players array for randomness.
+// Used in game start and round changes for getting prompts
+const addPrompts = (game: Game, em: MyContext["em"]) => {
+  const playersArr = shuffleArray([...game.players]);
+
+  playersArr.forEach(async (username: string, index: number) => {
+    const prompt = game.prompts.pop()!;
+
+    const nextIndex = index === game.players.length - 1 ? 0 : index + 1;
+    const playerOne = await em.findOne(Player, { username });
+    const playerTwo = await em.findOne(Player, {
+      username: game.players[nextIndex],
+    });
+
+    if (playerOne && playerTwo) {
+      game.promptPlayers.push({
+        prompt,
+        player_one: { username: playerOne.username, answer: "" },
+        player_two: { username: playerTwo.username, answer: "" },
+      });
+
+      playerOne.prompt_one.prompt = prompt;
+      playerTwo.prompt_two.prompt = prompt;
+    }
+
+    await em.persistAndFlush(playerOne!);
+    await em.persistAndFlush(playerTwo!);
+  });
+};
+
 @Resolver()
 export class GameResolver {
   @Query(() => Game, { nullable: true })
@@ -117,37 +147,12 @@ export class GameResolver {
       return false;
     }
 
-    // TODO: Shuffle players array for randomness.
-    // TODO: Abstract to different function
-    game.players.forEach(async (username, index) => {
-      const prompt = game.prompts.pop()!;
-
-      const nextIndex = index === game.players.length - 1 ? 0 : index + 1;
-      const playerOne = await em.findOne(Player, { username });
-      const playerTwo = await em.findOne(Player, {
-        username: game.players[nextIndex],
-      });
-
-      if (playerOne && playerTwo) {
-        game.promptPlayers.push({
-          prompt,
-          player_one: { username: playerOne.username, answer: "" },
-          player_two: { username: playerTwo.username, answer: "" },
-        });
-
-        playerOne.prompt_one.prompt = prompt;
-        playerTwo.prompt_two.prompt = prompt;
-      }
-
-      await em.persistAndFlush(playerOne!);
-      await em.persistAndFlush(playerTwo!);
-    });
+    addPrompts(game, em);
 
     // Add timestamp to db
     let votingDeadline = new Date();
     votingDeadline = new Date(votingDeadline.getTime() + 1000 * 30);
 
-    console.log("DEADLINES", game.deadlines);
     if (game.deadlines === null || game.deadlines === undefined)
       game.deadlines = [];
 
