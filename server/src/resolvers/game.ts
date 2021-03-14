@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Game, PromptAndPlayer } from "../entities/Game";
+import { Game } from "../entities/Game";
 import { FieldError, MyContext } from "../types";
 import {
   Arg,
@@ -104,6 +104,7 @@ export class GameResolver {
     const player = await em.findOne(Player, { id: req.session.userId });
 
     const game = await em.findOne(Game, { game_code: player?.game_code });
+
     // TODO: Handle errors better. Show in front-end what happened.
     if (!game) {
       console.log("Player: ", player, "Game: ", game, "req: ", req.session);
@@ -116,8 +117,28 @@ export class GameResolver {
     }
 
     // TODO: Shuffle players array for randomness.
-    // Assign each player their prompt
-    game.players.forEach((player, index) => {});
+    // TODO: Abstract to different function
+    game.players.forEach(async (player, index) => {
+      const prompt = game.prompts.pop()!;
+
+      const nextIndex = index === game.players.length - 1 ? 0 : index + 1;
+      const playerOne = await em.findOne(Player, player);
+      const playerTwo = await em.findOne(Player, game.players[nextIndex]);
+
+      if (playerOne && playerTwo) {
+        game.promptPlayers.push({
+          prompt,
+          playerOne: { username: playerOne.username, answer: "" },
+          playerTwo: { username: playerTwo.username, answer: "" },
+        });
+
+        playerOne.promptOne.prompt = prompt;
+        playerTwo.promptTwo.prompt = prompt;
+      }
+
+      await em.persistAndFlush(playerOne!);
+      await em.persistAndFlush(playerTwo!);
+    });
 
     // Add timestamp to db
     let votingDeadline = new Date();

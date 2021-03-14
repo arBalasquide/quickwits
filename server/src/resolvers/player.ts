@@ -141,7 +141,8 @@ export class PlayerResolver {
               username: options.username,
               game_code: options.game_code,
               id: id,
-              prompts: [],
+              promptOne: { prompt: "", answer: "" },
+              promptTwo: { prompt: "", answer: "" },
             },
           };
         }
@@ -165,8 +166,8 @@ export class PlayerResolver {
   ) {
     const player = await em.findOne(Player, { id: req.session.userId });
     if (!player) return false;
-    player.prompts[0].answer = options.answer1;
-    player.prompts[1].answer = options.answer2;
+    player.promptOne.answer = options.answer1;
+    player.promptTwo.answer = options.answer2;
     em.persistAndFlush(player);
     return true;
   }

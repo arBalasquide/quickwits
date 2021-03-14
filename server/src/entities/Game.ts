@@ -23,9 +23,9 @@ export class PromptAndPlayer {
   @Field()
   prompt: string;
   @Field()
-  player1: PlayerAndAnswer;
+  playerOne: PlayerAndAnswer;
   @Field()
-  player2: PlayerAndAnswer;
+  playerTwo: PlayerAndAnswer;
 }
 
 @ObjectType()
@@ -55,5 +55,5 @@ export class Game {
   deadlines: Deadline[];
 
   @Field(() => [PromptAndPlayer], { nullable: true })
-  promptplayers: PromptAndPlayer[];
+  promptPlayers: PromptAndPlayer[];
 }
