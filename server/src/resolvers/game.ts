@@ -41,6 +41,8 @@ class StateResponse {
   state?: String;
 }
 
+// TODO: Put this in a utils/libs folder
+// Its used in a lot of sections in this project
 // Shuffle array O(N) and grab prompts from the array
 const shuffleArray = (array: string[]) => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -50,7 +52,6 @@ const shuffleArray = (array: string[]) => {
   return array.splice(0, MAX_PLAYERS * MAX_ROUNDS * 2 + 1);
 };
 
-// TODO: Shuffle players array for randomness.
 // Used in game start and round changes for getting prompts
 const addPrompts = (game: Game, em: MyContext["em"]) => {
   const playersArr = shuffleArray([...game.players]);
@@ -94,9 +95,6 @@ export class GameResolver {
     @Arg("options") options: GameInput,
     @Ctx() { em }: MyContext
   ): Promise<GameResponse> {
-    let promptsArr = [...prompts];
-    promptsArr = shuffleArray(promptsArr);
-
     let game;
     try {
       const result = await (em as EntityManager)
@@ -106,7 +104,7 @@ export class GameResolver {
           game_code: options.game_code,
           owner: options.owner,
           players: [],
-          prompts: promptsArr,
+          prompts: [],
           state: GAME_STATES.LOBBY,
           prompt_players: [],
         })
@@ -114,7 +112,8 @@ export class GameResolver {
       game = result[0];
     } catch (err) {
       console.log(err);
-      // TODO: Better error handling.
+      // TODO: Better error handling. This err.code will change
+      // depending on the database one is using.
       if (err.code === "23505") {
         return {
           errors: [
@@ -136,12 +135,16 @@ export class GameResolver {
 
     const game = await em.findOne(Game, { game_code: player?.game_code });
 
+    let promptsArr = [...prompts];
+    promptsArr = shuffleArray(promptsArr);
+
     // TODO: Handle errors better. Show in front-end what happened.
     if (!game) {
       console.log("Player: ", player, "Game: ", game, "req: ", req.session);
       return false;
     }
 
+    game.prompts = promptsArr;
     // Only let owner start game.
     if (player?.username !== game.owner) {
       return false;
@@ -164,7 +167,8 @@ export class GameResolver {
     });
 
     game.state = GAME_STATES.ANSWERS;
-    em.persistAndFlush(game);
+
+    await em.persistAndFlush(game);
 
     return true;
   }

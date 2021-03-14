@@ -49,7 +49,7 @@ export class Game {
 
   @Field(() => [String])
   @Property()
-  prompts: [string];
+  prompts: string[];
 
   @Field(() => [Deadline], { nullable: true })
   deadlines: Deadline[];
