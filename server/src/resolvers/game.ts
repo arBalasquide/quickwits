@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Game } from "../entities/Game";
+import { Game, PromptAndPlayer } from "../entities/Game";
 import { FieldError, MyContext } from "../types";
 import {
   Arg,
@@ -110,55 +110,17 @@ export class GameResolver {
       return false;
     }
 
-    // Only let owner start game. Perhaps better to implement
-    // this in the front end.
+    // Only let owner start game.
     if (player?.username !== game.owner) {
       return false;
     }
 
     // TODO: Shuffle players array for randomness.
-    // Really ugly solution, fix plz.
-    let firstPlayer;
-    let temp: any;
-    for (let i = 0; i < game.players.length; i++) {
-      const username = game.players[i];
-      if (!firstPlayer) {
-        firstPlayer = await em.findOne(Player, {
-          username,
-          game_code: game.game_code,
-        });
-
-        if (!firstPlayer) return false;
-        else {
-          firstPlayer.prompts = [
-            { prompt: game.prompts.pop()!, answer: "" },
-            { prompt: game.prompts.pop()!, answer: "" },
-          ];
-          temp = firstPlayer;
-        }
-      } else if (i != game.players.length - 1) {
-        const nextPlayer = await em.findOne(Player, {
-          username,
-          game_code: game.game_code,
-        });
-
-        nextPlayer!.prompts = [
-          { prompt: temp!.prompts[1].prompt, answer: "" },
-          { prompt: game.prompts.pop()!, answer: "" },
-        ];
-        temp = nextPlayer;
-      } else {
-        const nextPlayer = await em.findOne(Player, {
-          username,
-          game_code: game.game_code,
-        });
-        nextPlayer!.prompts = [
-          { prompt: temp!.prompts[1].prompt, answer: "" },
-          { prompt: firstPlayer.prompts[0].prompt, answer: "" },
-        ];
-      }
-
-      await em.persistAndFlush(temp);
+    // Assign each player their prompt
+    for (let i = 0; i < game.prompts.length; i++) {
+      //let prompt = new PromptAndPlayer();
+      game.prompt_dict.push();
+      //await em.persistAndFlush(temp);
     }
 
     // Add timestamp to db
@@ -168,6 +130,7 @@ export class GameResolver {
     console.log("DEADLINES", game.deadlines);
     if (game.deadlines === null || game.deadlines === undefined)
       game.deadlines = [];
+
     game.deadlines.push({ state: GAME_STATES.VOTES, deadline: votingDeadline });
 
     // Callback to change state

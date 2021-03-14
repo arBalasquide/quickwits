@@ -11,6 +11,16 @@ export class Deadline {
 }
 
 @ObjectType()
+export class PromptAndPlayer {
+  @Field()
+  prompt: string;
+  @Field()
+  player1: string;
+  @Field()
+  player2: string;
+}
+
+@ObjectType()
 @Entity()
 export class Game {
   @Field(() => String)
@@ -35,4 +45,7 @@ export class Game {
 
   @Field(() => [Deadline], { nullable: true })
   deadlines: Deadline[];
+
+  @Field(() => [PromptAndPlayer], { nullable: true })
+  prompt_dict: PromptAndPlayer[];
 }
