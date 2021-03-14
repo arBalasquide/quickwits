@@ -115,6 +115,8 @@ export class PlayerResolver {
           username: options.username,
           game_code: options.game_code,
           id: id,
+          prompt_one: { prompt: "", answer: "" },
+          prompt_two: { prompt: "", answer: "" },
         })
         .returning("*");
       player = result[0];
@@ -141,8 +143,8 @@ export class PlayerResolver {
               username: options.username,
               game_code: options.game_code,
               id: id,
-              promptOne: { prompt: "", answer: "" },
-              promptTwo: { prompt: "", answer: "" },
+              prompt_one: { prompt: "", answer: "" },
+              prompt_two: { prompt: "", answer: "" },
             },
           };
         }
@@ -166,8 +168,8 @@ export class PlayerResolver {
   ) {
     const player = await em.findOne(Player, { id: req.session.userId });
     if (!player) return false;
-    player.promptOne.answer = options.answer1;
-    player.promptTwo.answer = options.answer2;
+    player.prompt_one.answer = options.answer1;
+    player.prompt_two.answer = options.answer2;
     em.persistAndFlush(player);
     return true;
   }

@@ -78,6 +78,7 @@ export class GameResolver {
           players: [],
           prompts: promptsArr,
           state: GAME_STATES.LOBBY,
+          prompt_players: [],
         })
         .returning("*");
       game = result[0];
@@ -118,22 +119,24 @@ export class GameResolver {
 
     // TODO: Shuffle players array for randomness.
     // TODO: Abstract to different function
-    game.players.forEach(async (player, index) => {
+    game.players.forEach(async (username, index) => {
       const prompt = game.prompts.pop()!;
 
       const nextIndex = index === game.players.length - 1 ? 0 : index + 1;
-      const playerOne = await em.findOne(Player, player);
-      const playerTwo = await em.findOne(Player, game.players[nextIndex]);
+      const playerOne = await em.findOne(Player, { username });
+      const playerTwo = await em.findOne(Player, {
+        username: game.players[nextIndex],
+      });
 
       if (playerOne && playerTwo) {
         game.promptPlayers.push({
           prompt,
-          playerOne: { username: playerOne.username, answer: "" },
-          playerTwo: { username: playerTwo.username, answer: "" },
+          player_one: { username: playerOne.username, answer: "" },
+          player_two: { username: playerTwo.username, answer: "" },
         });
 
-        playerOne.promptOne.prompt = prompt;
-        playerTwo.promptTwo.prompt = prompt;
+        playerOne.prompt_one.prompt = prompt;
+        playerTwo.prompt_two.prompt = prompt;
       }
 
       await em.persistAndFlush(playerOne!);

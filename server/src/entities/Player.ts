@@ -24,9 +24,11 @@ export class Player {
   @Property({ unique: true })
   id!: string;
 
-  @Field(() => PromptAndAnswer, { nullable: true })
-  promptOne: PromptAndAnswer;
+  @Field(() => PromptAndAnswer)
+  @Property()
+  prompt_one: PromptAndAnswer;
 
-  @Field(() => PromptAndAnswer, { nullable: true })
-  promptTwo: PromptAndAnswer;
+  @Field(() => PromptAndAnswer)
+  @Property()
+  prompt_two: PromptAndAnswer;
 }
