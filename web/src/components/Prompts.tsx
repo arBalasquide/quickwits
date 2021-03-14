@@ -12,16 +12,15 @@ import Countdown from "./Countdown";
 import { InputField } from "./InputField";
 
 export const Prompts = ({}) => {
-  const [prompts, setPrompts] = useState<PromptAndAnswer[]>([
-    {
-      prompt: "",
-      answer: "",
-    },
-    {
-      prompt: "",
-      answer: "",
-    },
-  ]); // Render blank while loading prompts
+  const [promptOne, setPromptOne] = useState<PromptAndAnswer>({
+    prompt: "",
+    answer: "",
+  });
+  const [promptTwo, setPromptTwo] = useState<PromptAndAnswer>({
+    prompt: "",
+    answer: "",
+  });
+
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
 
   const [answerMutation] = useAnswerMutation();
@@ -30,8 +29,10 @@ export const Prompts = ({}) => {
   const { data: me } = useMeQuery();
 
   useEffect(() => {
-    if (data && data.player && data.player.prompts)
-      setPrompts(data.player.prompts);
+    if (data && data.player) {
+      setPromptOne(data.player.prompt_one);
+      setPromptTwo(data.player.prompt_two);
+    }
 
     if (me && me.me && me.me.deadlines) {
       setDeadlines(me.me.deadlines);
@@ -63,7 +64,7 @@ export const Prompts = ({}) => {
       >
         {({ isSubmitting }) => (
           <Form>
-            <Text>{prompts[0].prompt}</Text>
+            <Text>{promptOne.prompt}</Text>
             <InputField
               color="black"
               name="answer1"
@@ -71,7 +72,7 @@ export const Prompts = ({}) => {
               placeholder="Funny Answer 😂"
             />
 
-            <Text pt={6}>{prompts[1].prompt}</Text>
+            <Text pt={6}>{promptTwo.prompt}</Text>
 
             <InputField
               color="black"

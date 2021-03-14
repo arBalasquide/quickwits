@@ -35,7 +35,8 @@ export type Player = {
   username: Scalars['String'];
   game_code: Scalars['String'];
   id: Scalars['String'];
-  prompts?: Maybe<Array<PromptAndAnswer>>;
+  prompt_one: PromptAndAnswer;
+  prompt_two: PromptAndAnswer;
 };
 
 export type PromptAndAnswer = {
@@ -52,6 +53,7 @@ export type Game = {
   state: Scalars['String'];
   prompts: Array<Scalars['String']>;
   deadlines?: Maybe<Array<Deadline>>;
+  promptPlayers?: Maybe<Array<PromptAndPlayer>>;
 };
 
 export type Deadline = {
@@ -60,6 +62,19 @@ export type Deadline = {
   deadline: Scalars['DateTime'];
 };
 
+
+export type PromptAndPlayer = {
+  __typename?: 'PromptAndPlayer';
+  prompt: Scalars['String'];
+  player_one: PlayerAndAnswer;
+  player_two: PlayerAndAnswer;
+};
+
+export type PlayerAndAnswer = {
+  __typename?: 'PlayerAndAnswer';
+  username: Scalars['String'];
+  answer: Scalars['String'];
+};
 
 export type Prompt = {
   __typename?: 'Prompt';
@@ -228,10 +243,13 @@ export type PlayerQuery = (
   & { player?: Maybe<(
     { __typename?: 'Player' }
     & Pick<Player, 'username' | 'id' | 'game_code'>
-    & { prompts?: Maybe<Array<(
+    & { prompt_one: (
       { __typename?: 'PromptAndAnswer' }
       & Pick<PromptAndAnswer, 'prompt' | 'answer'>
-    )>> }
+    ), prompt_two: (
+      { __typename?: 'PromptAndAnswer' }
+      & Pick<PromptAndAnswer, 'prompt' | 'answer'>
+    ) }
   )> }
 );
 
@@ -465,7 +483,11 @@ export const PlayerDocument = gql`
     username
     id
     game_code
-    prompts {
+    prompt_one {
+      prompt
+      answer
+    }
+    prompt_two {
       prompt
       answer
     }
