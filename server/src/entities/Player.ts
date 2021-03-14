@@ -2,11 +2,11 @@ import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
-export class PromptAndAnswer {
+class PromptAndAnswer {
   @Field()
-  prompt: String;
+  prompt: string;
   @Field()
-  answer: String;
+  answer: string;
 }
 
 @ObjectType()
@@ -24,6 +24,9 @@ export class Player {
   @Property({ unique: true })
   id!: string;
 
-  @Field(() => [PromptAndAnswer], { nullable: true })
-  prompts: PromptAndAnswer[];
+  @Field(() => PromptAndAnswer)
+  promptOne: PromptAndAnswer;
+
+  @Field(() => PromptAndAnswer)
+  promptTwo: PromptAndAnswer;
 }

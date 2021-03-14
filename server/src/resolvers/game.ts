@@ -117,11 +117,7 @@ export class GameResolver {
 
     // TODO: Shuffle players array for randomness.
     // Assign each player their prompt
-    for (let i = 0; i < game.prompts.length; i++) {
-      //let prompt = new PromptAndPlayer();
-      game.prompt_dict.push();
-      //await em.persistAndFlush(temp);
-    }
+    game.players.forEach((player, index) => {});
 
     // Add timestamp to db
     let votingDeadline = new Date();
