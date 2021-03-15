@@ -53,16 +53,18 @@ const shuffleArray = (array: string[]) => {
 };
 
 // Used in game start and round changes for getting prompts
-const addPrompts = (game: Game, em: MyContext["em"]) => {
+const addPrompts = async (game: Game, em: MyContext["em"]) => {
   const playersArr = shuffleArray([...game.players]);
 
-  playersArr.forEach(async (username: string, index: number) => {
+  for (let i = 0; i < playersArr.length; i++) {
+    const username = playersArr[i];
+    const index = i;
     const prompt = game.prompts.pop()!;
 
     const nextIndex = index === game.players.length - 1 ? 0 : index + 1;
     const playerOne = await em.findOne(Player, { username });
     const playerTwo = await em.findOne(Player, {
-      username: game.players[nextIndex],
+      username: playersArr[nextIndex],
     });
 
     if (playerOne && playerTwo) {
@@ -75,10 +77,7 @@ const addPrompts = (game: Game, em: MyContext["em"]) => {
       playerOne.prompt_one.prompt = prompt;
       playerTwo.prompt_two.prompt = prompt;
     }
-
-    await em.persistAndFlush(playerOne!);
-    await em.persistAndFlush(playerTwo!);
-  });
+  }
 };
 
 @Resolver()
@@ -167,8 +166,6 @@ export class GameResolver {
     });
 
     game.state = GAME_STATES.ANSWERS;
-
-    await em.persistAndFlush(game);
 
     return true;
   }
