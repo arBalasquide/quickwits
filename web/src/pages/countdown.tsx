@@ -7,7 +7,7 @@ interface joinProp {}
 const Index: React.FC<joinProp> = ({}) => {
   return (
     <Center pt={10} width="100%">
-      <Countdown deadline={new Date("2021-02-01")} />
+      <Countdown deadline={new Date("2021-05-01")} />
     </Center>
   );
 };
