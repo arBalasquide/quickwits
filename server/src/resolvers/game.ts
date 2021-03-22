@@ -24,7 +24,7 @@ class GameInput {
 }
 
 @ObjectType()
-class GameResponse {
+export class GameResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
 
@@ -92,8 +92,11 @@ export class GameResolver {
   @Mutation(() => GameResponse)
   async create(
     @Arg("options") options: GameInput,
-    @Ctx() { em }: MyContext
+    @Ctx() context: MyContext
   ): Promise<GameResponse> {
+    const { em } = context;
+    console.log(`THIS: ${options}`);
+    console.log(`THIS2: ${context}`);
     let game;
     try {
       const result = await (em as EntityManager)
@@ -125,6 +128,7 @@ export class GameResolver {
       }
     }
 
+    console.log(`thegame: ${game.owner}`);
     return { game };
   }
 
