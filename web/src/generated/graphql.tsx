@@ -22,6 +22,7 @@ export type Query = {
   __typename?: 'Query';
   player?: Maybe<Player>;
   me?: Maybe<Game>;
+  getVotes: PromptAndPlayer;
   prompt?: Maybe<Prompt>;
 };
 
@@ -218,6 +219,24 @@ export type StartGameMutationVariables = Exact<{ [key: string]: never; }>;
 export type StartGameMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'startGame'>
+);
+
+export type GetVotesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetVotesQuery = (
+  { __typename?: 'Query' }
+  & { getVotes: (
+    { __typename?: 'PromptAndPlayer' }
+    & Pick<PromptAndPlayer, 'prompt'>
+    & { player_one: (
+      { __typename?: 'PlayerAndAnswer' }
+      & Pick<PlayerAndAnswer, 'answer' | 'username'>
+    ), player_two: (
+      { __typename?: 'PlayerAndAnswer' }
+      & Pick<PlayerAndAnswer, 'answer' | 'username'>
+    ) }
+  ) }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -432,6 +451,52 @@ export function useStartGameMutation(baseOptions?: Apollo.MutationHookOptions<St
 export type StartGameMutationHookResult = ReturnType<typeof useStartGameMutation>;
 export type StartGameMutationResult = Apollo.MutationResult<StartGameMutation>;
 export type StartGameMutationOptions = Apollo.BaseMutationOptions<StartGameMutation, StartGameMutationVariables>;
+export const GetVotesDocument = gql`
+    query GetVotes {
+  getVotes {
+    prompt
+    player_one {
+      answer
+      username
+    }
+    player_two {
+      answer
+      username
+    }
+  }
+}
+    `;
+export type GetVotesComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<GetVotesQuery, GetVotesQueryVariables>, 'query'>;
+
+    export const GetVotesComponent = (props: GetVotesComponentProps) => (
+      <ApolloReactComponents.Query<GetVotesQuery, GetVotesQueryVariables> query={GetVotesDocument} {...props} />
+    );
+    
+
+/**
+ * __useGetVotesQuery__
+ *
+ * To run a query within a React component, call `useGetVotesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVotesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetVotesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetVotesQuery(baseOptions?: Apollo.QueryHookOptions<GetVotesQuery, GetVotesQueryVariables>) {
+        return Apollo.useQuery<GetVotesQuery, GetVotesQueryVariables>(GetVotesDocument, baseOptions);
+      }
+export function useGetVotesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetVotesQuery, GetVotesQueryVariables>) {
+          return Apollo.useLazyQuery<GetVotesQuery, GetVotesQueryVariables>(GetVotesDocument, baseOptions);
+        }
+export type GetVotesQueryHookResult = ReturnType<typeof useGetVotesQuery>;
+export type GetVotesLazyQueryHookResult = ReturnType<typeof useGetVotesLazyQuery>;
+export type GetVotesQueryResult = Apollo.QueryResult<GetVotesQuery, GetVotesQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

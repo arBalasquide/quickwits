@@ -1,6 +1,6 @@
 import { Box, Center, Container, SimpleGrid, Text } from "@chakra-ui/react";
 
-const PromptCard = ({ prompt, answers }) => {
+const PromptCard = ({ prompt, playerOne, playerTwo }) => {
   return (
     <Container>
       <Center>
@@ -18,7 +18,7 @@ const PromptCard = ({ prompt, answers }) => {
           borderRadius="md"
         >
           <Box fontSize="lg" p={8}>
-            <Text>{answers[0]}</Text>
+            <Text>{playerOne.answer}</Text>
           </Box>
         </Box>
         <Box
@@ -30,7 +30,7 @@ const PromptCard = ({ prompt, answers }) => {
           borderRadius="md"
         >
           <Box fontSize="lg" p={8}>
-            {answers[1]}
+            {playerTwo.answer}
           </Box>
         </Box>
       </SimpleGrid>

@@ -1,0 +1,13 @@
+query GetVotes {
+  getVotes {
+    prompt
+    player_one {
+      answer
+      username
+    }
+    player_two {
+      answer
+      username
+    }
+  }
+}

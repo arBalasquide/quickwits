@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Game } from "../entities/Game";
+import { Game, PromptAndPlayer } from "../entities/Game";
 import { FieldError, MyContext } from "../types";
 import {
   Arg,
@@ -217,5 +217,15 @@ export class GameResolver {
     // }
 
     return { state };
+  }
+
+  // TODO: This always return the first prompt
+  // Instead return the current prompt based on current voting round.
+  @Query(() => PromptAndPlayer)
+  async getVotes(@Ctx() { em, req }: MyContext) {
+    const player = await em.findOne(Player, { id: req.session.userId });
+    const game = await em.findOne(Game, { game_code: player?.game_code });
+
+    return game?.promptPlayers[0];
   }
 }
