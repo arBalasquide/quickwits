@@ -95,8 +95,8 @@ export class GameResolver {
     @Ctx() context: MyContext
   ): Promise<GameResponse> {
     const { em } = context;
-    console.log(`THIS: ${options}`);
-    console.log(`THIS2: ${context}`);
+    // console.log(`THIS: ${JSON.stringify(options)}`);
+    // console.log(`THIS2: ${JSON.stringify(context)}`);
     let game;
     try {
       const result = await (em as EntityManager)

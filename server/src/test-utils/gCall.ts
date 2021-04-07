@@ -77,8 +77,55 @@
 //       res,
 //       pubsub,
 //     }),
- 
+
 //   const { query, mutate } = createTestClient(apolloServer);
 
 //  });
 // };
+
+import { graphql } from "graphql";
+import { makeExecutableSchema } from "graphql-tools";
+import { GameResolver } from "../resolvers/game";
+import { PlayerResolver } from "../resolvers/player";
+import { PromptResolver } from "../resolvers/prompt";
+import { SubscriptionResolver } from "../resolvers/subscription";
+import { buildTypeDefsAndResolvers } from "type-graphql";
+import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
+
+const getSchema = async () => {
+  const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
+    resolvers: [
+      GameResolver,
+      PromptResolver,
+      PlayerResolver,
+      SubscriptionResolver,
+    ],
+  });
+  return makeExecutableSchema({ typeDefs, resolvers });
+};
+
+export const graphqlTestCall = async (
+  query: any,
+  orm: MikroORM<IDatabaseDriver<Connection>>,
+  variables?: any,
+  userId?: number | string
+) => {
+  const schema = await getSchema();
+  return graphql(
+    schema,
+    query,
+    undefined,
+    {
+      em: orm.em,
+      req: {
+        session: {
+          userId,
+        },
+      },
+      res: {
+        clearCookie: () => {},
+      },
+    },
+    variables
+  );
+};

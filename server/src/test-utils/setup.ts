@@ -1,3 +1,3 @@
 import { testConnection } from "./testConnection";
 
-testConnection(true);
+testConnection();
