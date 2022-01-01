@@ -1,4 +1,5 @@
 export const PORT = 4000;
+export const WEB_PORT = 3000;
 export const __prod__ = process.env.NODE_ENV === "production";
 export const COOKIE_NAME = "qid";
 
@@ -18,3 +19,5 @@ export const GAME_STATES = {
   DELETE: "delete",
   LOBBY: "lobby",
 };
+
+export const HOST = "localhost";

@@ -3,11 +3,12 @@ import { ChakraProvider, ColorModeProvider } from "@chakra-ui/react";
 import theme from "../theme";
 import { socketSplitLink } from "../service/socket";
 import Header from "../components/MyHeader";
+import { HOST, PORT } from "../config";
 
 function MyApp({ Component, pageProps }) {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: "http://localhost:4000/graphql",
+    uri: `http://${HOST}:${PORT}/graphql`,
     credentials: "include",
     link: socketSplitLink,
   });

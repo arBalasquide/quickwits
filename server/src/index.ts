@@ -10,7 +10,7 @@ import { buildTypeDefsAndResolvers } from "type-graphql";
 import { MyContext } from "./types";
 import { PlayerResolver } from "./resolvers/player";
 import { GameResolver } from "./resolvers/game";
-import { COOKIE_NAME, PORT, __prod__ } from "./constants";
+import { COOKIE_NAME, HOST, WEB_PORT, PORT, __prod__ } from "./constants";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import redis from "redis";
@@ -73,7 +73,7 @@ const main = async () => {
   apolloServer.applyMiddleware({
     app,
     cors: {
-      origin: "http://localhost:3000",
+      origin: `http://${HOST}:${WEB_PORT}`,
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
     },
@@ -84,10 +84,10 @@ const main = async () => {
 
   httpServer.listen({ port: PORT }, () => {
     console.log(
-      `🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
+      `🚀 Server ready at http://${HOST}:${PORT}${apolloServer.graphqlPath}`
     );
     console.log(
-      `🚀 Subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`
+      `🚀 Subscriptions ready at ws://${HOST}:${PORT}${apolloServer.subscriptionsPath}`
     );
   });
 };

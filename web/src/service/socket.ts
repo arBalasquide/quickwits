@@ -1,13 +1,14 @@
 import { HttpLink, split } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { HOST, PORT } from "../config";
 
 // It is not allowed to create a socket on the browser
 // due to browsers already supporting their own sockets
 // therefore, don't create socket on the browser side
 const wsLink = process.browser
   ? new WebSocketLink({
-      uri: `ws://localhost:4000/graphql`,
+      uri: `ws://${HOST}:${PORT}/graphql`,
       options: {
         reconnect: true,
       },
@@ -15,7 +16,7 @@ const wsLink = process.browser
   : null;
 
 const httplink = new HttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri: `http://${HOST}:${PORT}/graphql`,
   credentials: "include",
 });
 
